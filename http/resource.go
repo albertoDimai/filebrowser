@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -180,12 +181,15 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 })
 
 func resourcePatchHandler(fileCache FileCache) handleFunc {
+
 	log.SetFlags(log.Llongfile)
 	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		src := r.URL.Path
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
 		dst, err := url.QueryUnescape(dst)
+
+
 		if !d.Check(src) || !d.Check(dst) {
 			return http.StatusForbidden, nil
 		}
@@ -196,28 +200,31 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		err = checkParent(src, dst)
-		if err != nil {
-			return http.StatusBadRequest, err
-		}
+		fmt.Printf("0 Hello, %s, %s, %s\n", src, action,dst) //Will print 'Hello, Rob and Ken'
 
-		override := r.URL.Query().Get("override") == "true"
-		rename := r.URL.Query().Get("rename") == "true"
-		unzip := r.URL.Query().Get("unzip") == "true"
-		if !override && !rename && !unzip {
-			if _, err = d.user.Fs.Stat(dst); err == nil {
-				return http.StatusConflict, nil
+		if action != "mauro" {
+			err = checkParent(src, dst)
+			if err != nil {
+				return http.StatusBadRequest, err
+			}
+
+			override := r.URL.Query().Get("override") == "true"
+			rename := r.URL.Query().Get("rename") == "true"
+			unzip := r.URL.Query().Get("unzip") == "true"
+			if !override && !rename && !unzip {
+				if _, err = d.user.Fs.Stat(dst); err == nil {
+					return http.StatusConflict, nil
+				}
+			}
+			if rename {
+				dst = addVersionSuffix(dst, d.user.Fs)
+			}
+
+			// Permission for overwriting the file
+			if override && !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
 			}
 		}
-		if rename {
-			dst = addVersionSuffix(dst, d.user.Fs)
-		}
-
-		// Permission for overwriting the file
-		if override && !d.user.Perm.Modify {
-			return http.StatusForbidden, nil
-		}
-
 		err = d.RunHook(func() error {
 			return patchAction(r.Context(), action, src, dst, d, fileCache)
 		}, action, src, dst, d.user)
@@ -297,6 +304,10 @@ func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) e
 }
 
 func patchAction(ctx context.Context, action, src, dst string, d *data, fileCache FileCache) error {
+
+	fmt.Printf("Hello, %v\n", action) //Will print 'Hello, Rob and Ken'
+
+
 	switch action {
 	// TODO: use enum
 	case "copy":
@@ -337,6 +348,14 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		src = d.user.FullPath(src)
 		dst = d.user.FullPath(dst)
 		return archiver.Unarchive(src, dst)
+	case "mauro":
+		if !d.user.Perm.Unzip {
+			return errors.ErrPermissionDenied
+		}
+		src = d.user.FullPath(src)
+		cmd := exec.Command("pdflatex.wrapper.sh", src) //nolint:gosec
+		return cmd.Start()
+
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 	}

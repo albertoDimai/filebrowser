@@ -135,10 +135,27 @@ function moveCopy(items, copy = false, overwrite = false, rename = false, unzip 
   return Promise.all(promises);
 }
 
+export function mauro(items) {
+  console.log("mauro fn")
+  // return moveCopy(items, false, false,false, false, true);
+  let promises = [];
+  //actually the items can be just one here ....
+  for (let item of items) {
+    const from = item.from;
+    const url = `${from}?action=mauro`;
+    console.log(url);
+    promises.push(resourceAction(url, "PATCH"));
+  }
+  return Promise.all(promises);
+}
+
+
+
 export function unzip(items) {
   console.log("unzip fn")
   return moveCopy(items, false, false,false, true);
 }
+
 
 export function move(items, overwrite = false, rename = false) {
   return moveCopy(items, false, overwrite, rename);

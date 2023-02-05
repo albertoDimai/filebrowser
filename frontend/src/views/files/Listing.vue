@@ -51,6 +51,13 @@
             :label="$t('buttons.unzip')"
             show="unzip"
           />
+          <action
+              v-if="headerButtons.mauro"
+              id="delete-button"
+              icon="rtt"
+              :label="$t('buttons.mauro')"
+              show="mauro"
+          />
         </template>
 
         <action
@@ -120,10 +127,16 @@
         show="delete"
       />
       <action
-        v-if="headerButtons.unzip"
-        icon="unarchive"
-        :label="$t('buttons.unzip')"
-        show="unzip"
+          v-if="headerButtons.unzip"
+          icon="unarchive"
+          :label="$t('buttons.unzip')"
+          show="unzip"
+      />
+      <action
+          v-if="headerButtons.mauro"
+          icon="rtt"
+          :label="$t('buttons.mauro')"
+          show="mauro"
       />
     </div>
 
@@ -396,6 +409,8 @@ export default {
         move: this.selectedCount > 0 && this.user.perm.rename,
         copy: this.selectedCount > 0 && this.user.perm.create,
         unzip: this.selectedCount === 1 && this.isArchive(this.req.items[this.selected[0]].extension) && this.user.perm.unzip,
+        mauro: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
+
       };
     },
     isMobile() {
@@ -898,6 +913,10 @@ export default {
     isArchive(ext) {
       const zip_exts = [".zip",".bz2",".br",".tbz2",".gz",".xz",".rar",".tar"]; //可扩展
       return zip_exts.indexOf(ext) > -1;
+    },
+    isTex(ext) {
+      const tex_exts = [".tex",".Tex",".teX",".TEX"];
+      return tex_exts.indexOf(ext) > -1;
     }
   },
 };

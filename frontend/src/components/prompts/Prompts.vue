@@ -23,6 +23,7 @@ import ShareDelete from "./ShareDelete";
 import Unzip from "./Unzip";
 import { mapState } from "vuex";
 import buttons from "@/utils/buttons";
+import Mauro from "./Mauro.vue";
 
 export default {
   name: "prompts",
@@ -42,6 +43,7 @@ export default {
     Upload,
     ShareDelete,
     Unzip,
+    Mauro,
   },
   data: function () {
     return {
@@ -103,6 +105,7 @@ export default {
           "upload",
           "share-delete",
           "unzip",
+          "mauro",
         ].indexOf(this.show) >= 0;
 
       return (matched && this.show) || null;
