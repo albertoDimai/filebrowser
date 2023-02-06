@@ -135,6 +135,7 @@ func importConf(db *storm.DB, path string, sto *storage.Storage) error {
 				Share:    true,
 				Download: true,
 				Unzip:    true,
+				Mauro:    true,
 			},
 		},
 	}

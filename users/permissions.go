@@ -11,4 +11,5 @@ type Permissions struct {
 	Share    bool `json:"share"`
 	Download bool `json:"download"`
 	Unzip    bool `json:"unzip"`
+	Mauro    bool `json:"mauro"`
 }

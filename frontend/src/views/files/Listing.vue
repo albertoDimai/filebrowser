@@ -435,9 +435,9 @@ export default {
         move: this.selectedCount > 0 && this.user.perm.rename,
         copy: this.selectedCount > 0 && this.user.perm.create,
         unzip: this.selectedCount === 1 && this.isArchive(this.req.items[this.selected[0]].extension) && this.user.perm.unzip,
-        mauro_pdflatex: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
-        mauro_m2hv: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
-        mauro_m2ledmac: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
+        mauro_pdflatex: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && this.user.perm.mauro,
+        mauro_m2hv: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && this.user.perm.mauro,
+        mauro_m2ledmac: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && this.user.perm.mauro,
       };
     },
     isMobile() {

@@ -330,6 +330,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 				Share:    true,
 				Download: true,
 				Unzip:    true,
+				Mauro:    true,
 			},
 		},
 		AuthMethod: "",

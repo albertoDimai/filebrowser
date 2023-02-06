@@ -216,6 +216,8 @@ func (a *HookAuth) GetUser(d *users.User) *users.User {
 		Share:    isAdmin || a.Fields.GetBoolean("user.perm.share", d.Perm.Share),
 		Download: isAdmin || a.Fields.GetBoolean("user.perm.download", d.Perm.Download),
 		Unzip:    isAdmin || a.Fields.GetBoolean("user.perm.unzip", d.Perm.Unzip),
+		Mauro:    isAdmin || a.Fields.GetBoolean("user.perm.mauro", d.Perm.Mauro),
+
 	}
 	user := users.User{
 		ID:          d.ID,

@@ -74,6 +74,7 @@ func convertUsersToNew(old []*oldUser) ([]*users.User, error) {
 				Share:    true,
 				Download: true,
 				Unzip:    true,
+				Mauro:    true,
 			},
 		}
 

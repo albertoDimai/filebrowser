@@ -351,7 +351,7 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		dst = d.user.FullPath(dst)
 		return archiver.Unarchive(src, dst)
 	case "mauro:pdflatex":
-		if false /*|| !d.user.Perm.Mauro*/ {
+		if !d.user.Perm.Mauro {
 			return errors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
