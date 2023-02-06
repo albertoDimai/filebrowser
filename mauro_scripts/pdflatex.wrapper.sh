@@ -1,6 +1,6 @@
 #!/bin/bash
 outfile=${1}.pdflatex.OUT.log
-(
-    pdflatex ${i}
-) 2>&1 > $outfile
 
+(pdflatex ${1}) > $outfile 2>&1 
+
+exit 0;

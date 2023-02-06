@@ -1,6 +1,6 @@
 #!/bin/bash
-outfile=${1}.OUT.log
-(
-m2hv ${1}
-) 2>&1 > $outfile
+outfile=${1}.m2hv.OUT.log
 
+(m2hv ${1} ) > $outfile 2>&1 
+
+exit 0;
