@@ -23,7 +23,9 @@ import ShareDelete from "./ShareDelete";
 import Unzip from "./Unzip";
 import { mapState } from "vuex";
 import buttons from "@/utils/buttons";
-import Mauro from "./Mauro.vue";
+import MauroPdflatex from "./Mauro_pdflatex.vue";
+import MauroM2ledmac from "./Mauro_m2ledmac.vue";
+import MauroM2hv from "./Mauro_m2hv.vue";
 
 export default {
   name: "prompts",
@@ -43,7 +45,9 @@ export default {
     Upload,
     ShareDelete,
     Unzip,
-    Mauro,
+    MauroPdflatex,
+    MauroM2ledmac,
+    MauroM2hv,
   },
   data: function () {
     return {
@@ -105,7 +109,9 @@ export default {
           "upload",
           "share-delete",
           "unzip",
-          "mauro",
+          "mauro-pdflatex",
+          "mauro-m2hv",
+          "mauro-m2ledmac",
         ].indexOf(this.show) >= 0;
 
       return (matched && this.show) || null;

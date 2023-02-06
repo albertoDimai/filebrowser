@@ -200,9 +200,12 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		fmt.Printf("0 Hello, %s, %s, %s\n", src, action,dst) //Will print 'Hello, Rob and Ken'
 
-		if action != "mauro" {
+
+		fmt.Printf("Pah: %s, Action: %s\n", src, action ) //Will print 'Hello, Rob and Ken'
+
+
+		if !strings.HasPrefix(action, "mauro:") { //any command starting with mauro is handled differently
 			err = checkParent(src, dst)
 			if err != nil {
 				return http.StatusBadRequest, err
@@ -305,8 +308,7 @@ func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) e
 
 func patchAction(ctx context.Context, action, src, dst string, d *data, fileCache FileCache) error {
 
-	fmt.Printf("Hello, %v\n", action) //Will print 'Hello, Rob and Ken'
-
+	fmt.Printf("Action: #%v#\n", action) //Will print
 
 	switch action {
 	// TODO: use enum
@@ -348,14 +350,27 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		src = d.user.FullPath(src)
 		dst = d.user.FullPath(dst)
 		return archiver.Unarchive(src, dst)
-	case "mauro":
-		if !d.user.Perm.Unzip {
+	case "mauro:pdflatex":
+		if false /*|| !d.user.Perm.Mauro*/ {
 			return errors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
 		cmd := exec.Command("pdflatex.wrapper.sh", src) //nolint:gosec
-		return cmd.Start()
-
+		return cmd.Run()
+	case "mauro:m2hv":
+		if false /*|| !d.user.Perm.Mauro*/ {
+			return errors.ErrPermissionDenied
+		}
+		src = d.user.FullPath(src)
+		cmd := exec.Command("m2hv.wrapper.sh", src) //nolint:gosec
+		return cmd.Run()
+	case "mauro:m2ledmac":
+		if false /*|| !d.user.Perm.Mauro*/ {
+			return errors.ErrPermissionDenied
+		}
+		src = d.user.FullPath(src)
+		cmd := exec.Command("m2ledmac.wrapper.sh", src) //nolint:gosec
+		return cmd.Run()
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 	}

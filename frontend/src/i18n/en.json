@@ -1,6 +1,9 @@
 {
   "buttons": {
     "unzip": "unzip",
+    "mauro_pdflatex": "PdfLaTeX",
+    "mauro_m2ledmac": "m2ledmac",
+    "mauro_m2hv": "m2hv",
     "mauro": "mauro",
     "cancel": "Cancel",
     "close": "Close",
@@ -124,7 +127,9 @@
   "permanent": "Permanent",
   "prompts": {
     "unzip": "Unzip",
-    "mauro": "Mauro",
+    "mauro_pdflatex": "Mauro/PdfLaTeX",
+    "mauro_m2ledmac": "Mauro/m2ledmac",
+    "mauro_m2hv": "Mauro/m2hv",
     "copy": "Copy",
     "copyMessage": "Choose the place to copy your files:",
     "currentlyNavigating": "Currently navigating on:",

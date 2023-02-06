@@ -135,14 +135,14 @@ function moveCopy(items, copy = false, overwrite = false, rename = false, unzip 
   return Promise.all(promises);
 }
 
-export function mauro(items) {
-  console.log("mauro fn")
+export function mauro(command,items) {
+  console.log("mauro fn, command: ", command)
   // return moveCopy(items, false, false,false, false, true);
   let promises = [];
   //actually the items can be just one here ....
   for (let item of items) {
     const from = item.from;
-    const url = `${from}?action=mauro`;
+    const url = `${from}?action=mauro:${command}` ;
     console.log(url);
     promises.push(resourceAction(url, "PATCH"));
   }

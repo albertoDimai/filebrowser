@@ -52,11 +52,25 @@
             show="unzip"
           />
           <action
-              v-if="headerButtons.mauro"
-              id="delete-button"
+              v-if="headerButtons.mauro_pdflatex"
+              id="mauro_pdflatex-button"
               icon="rtt"
-              :label="$t('buttons.mauro')"
-              show="mauro"
+              :label="$t('buttons.mauro_pdflatex')"
+              show="mauro-pdflatex"
+          />
+          <action
+              v-if="headerButtons.mauro_m2ledmac"
+              id="mauro_m2ledmac-button"
+              icon="description"
+              :label="$t('buttons.mauro_m2ledmac')"
+              show="mauro-m2ledmac"
+          />
+          <action
+              v-if="headerButtons.mauro_m2hv"
+              id="mauro_m2hv-button"
+              icon="list_alt"
+              :label="$t('buttons.mauro_m2hv')"
+              show="mauro-m2hv"
           />
         </template>
 
@@ -133,10 +147,22 @@
           show="unzip"
       />
       <action
-          v-if="headerButtons.mauro"
+          v-if="headerButtons.mauro_pdflatex"
           icon="rtt"
-          :label="$t('buttons.mauro')"
-          show="mauro"
+          :label="$t('buttons.mauro_pdflatex')"
+          show="mauro-pdflatex"
+      />
+      <action
+          v-if="headerButtons.mauro_m2ledmac"
+          icon="description"
+          :label="$t('buttons.mauro_m2ledmac')"
+          show="mauro-m2ledmac"
+      />
+      <action
+          v-if="headerButtons.mauro_m2hv"
+          icon="list_alt"
+          :label="$t('buttons.mauro_m2hv')"
+          show="mauro-m2hv"
       />
     </div>
 
@@ -409,8 +435,9 @@ export default {
         move: this.selectedCount > 0 && this.user.perm.rename,
         copy: this.selectedCount > 0 && this.user.perm.create,
         unzip: this.selectedCount === 1 && this.isArchive(this.req.items[this.selected[0]].extension) && this.user.perm.unzip,
-        mauro: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
-
+        mauro_pdflatex: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
+        mauro_m2hv: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
+        mauro_m2ledmac: this.selectedCount === 1 && this.isTex(this.req.items[this.selected[0]].extension) && (true || this.user.perm.mauro),
       };
     },
     isMobile() {

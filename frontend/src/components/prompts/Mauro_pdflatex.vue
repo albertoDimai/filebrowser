@@ -1,11 +1,11 @@
 <template>
     <div class="card floating">
       <div class="card-title">
-        <h2>{{ $t("prompts.mauro") }}</h2>
+        <h2>{{ $t("prompts.mauro_pdflatex") }}</h2>
       </div>
   
       <div class="card-content">
-        You are going to execute pdflatex on the file, ok ?
+        Execute pdflatex on the file ?
 <!--        <file-list @update:selected="(val) => (dest = val)"></file-list>-->
       </div>
   
@@ -20,11 +20,11 @@
         </button>
         <button
           class="button button--flat"
-          @click="mauro"
-          :aria-label="$t('buttons.mauro')"
-          :title="$t('buttons.mauro')"
+          @click="mauro_pdflatex"
+          :aria-label="$t('buttons.mauro_pdflatex')"
+          :title="$t('buttons.mauro_pdflatex')"
         >
-          {{ $t("buttons.mauro") }}
+          {{ $t("buttons.mauro_pdflatex") }}
         </button>
       </div>
     </div>
@@ -37,7 +37,7 @@
   import buttons from "@/utils/buttons";
   
   export default {
-    name: "mauro",
+    name: "mauro_pdflatex",
     // components: { FileList },
     data: function () {
       return {
@@ -47,7 +47,7 @@
     },
     computed: mapState(["req", "selected"]),
     methods: {
-      mauro: async function (event) {
+      mauro_pdflatex: async function (event) {
         event.preventDefault();
         let items = [];
   
@@ -58,17 +58,17 @@
         }
   
         let action = async () => {
-          buttons.loading("mauro");
+          buttons.loading("mauro_pdflatex");
   
           await api
-            .mauro(items)
+            .mauro("pdflatex",items)
             .then(() => {
-              buttons.success("mauro");
+              buttons.success("mauro_pdflatex");
               this.$router.push({ path: "#" + Math.random() });
 
             })
             .catch((e) => {
-              buttons.done("mauro");
+              buttons.done("mauro_pdflatex");
               this.$showError(e);
             });
         };
