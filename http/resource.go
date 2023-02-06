@@ -358,14 +358,14 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		cmd := exec.Command("pdflatex.wrapper.sh", src) //nolint:gosec
 		return cmd.Run()
 	case "mauro:m2hv":
-		if false /*|| !d.user.Perm.Mauro*/ {
+		if !d.user.Perm.Mauro {
 			return errors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
 		cmd := exec.Command("m2hv.wrapper.sh", src) //nolint:gosec
 		return cmd.Run()
 	case "mauro:m2ledmac":
-		if false /*|| !d.user.Perm.Mauro*/ {
+		if !d.user.Perm.Mauro {
 			return errors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
