@@ -6,7 +6,10 @@
   
       <div class="card-content">
         Execute m2ledmac on the file ?
-<!--        <file-list @update:selected="(val) => (dest = val)"></file-list>-->
+        <div style="padding-top: 15px;">
+          <input style="margin: 5px;" type="checkbox" id="checkbox" ref="theCheckbox" checked="true">
+          <label for="checkbox">load result</label>
+        </div>
       </div>
   
       <div class="card-action">
@@ -58,14 +61,17 @@
         }
   
         let action = async () => {
+          const load_result = this.$refs.theCheckbox.checked;
           buttons.loading("mauro_m2ledmac");
-  
+
           await api
             .mauro("m2ledmac",items)
             .then(() => {
               buttons.success("mauro_m2ledmac");
-              this.$router.push({ path: "#" + Math.random() });
-
+              if(load_result)
+                this.$router.push({ path: items[0].from + ".m2ledmac.OUT.log" }); //convenzione
+              else
+                this.$router.push({ path: "#" + Math.random() });
             })
             .catch((e) => {
               buttons.done("mauro_m2ledmac");

@@ -6,7 +6,10 @@
   
       <div class="card-content">
         Execute pdflatex on the file ?
-<!--        <file-list @update:selected="(val) => (dest = val)"></file-list>-->
+        <div style="padding-top: 15px;">
+          <input style="margin: 5px;" type="checkbox" id="checkbox" ref="theCheckbox" checked="true">
+          <label for="checkbox">load result</label>
+        </div>
       </div>
   
       <div class="card-action">
@@ -56,16 +59,19 @@
             from: this.req.items[item].url
           });
         }
-  
         let action = async () => {
+          const load_result = this.$refs.theCheckbox.checked;
           buttons.loading("mauro_pdflatex");
-  
+
           await api
             .mauro("pdflatex",items)
             .then(() => {
               buttons.success("mauro_pdflatex");
-              this.$router.push({ path: "#" + Math.random() });
 
+              if(load_result)
+                this.$router.push({ path: items[0].from + ".pdflatex.OUT.log" }); //convenzione
+              else
+                this.$router.push({ path: "#" + Math.random() });
             })
             .catch((e) => {
               buttons.done("mauro_pdflatex");
