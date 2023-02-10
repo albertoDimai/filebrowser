@@ -52,13 +52,6 @@
             show="unzip"
           />
           <action
-              v-if="headerButtons.mauro_pdflatex"
-              id="mauro_pdflatex-button"
-              icon="rtt"
-              :label="$t('buttons.mauro_pdflatex')"
-              show="mauro-pdflatex"
-          />
-          <action
               v-if="headerButtons.mauro_m2ledmac"
               id="mauro_m2ledmac-button"
               icon="description"
@@ -71,6 +64,13 @@
               icon="list_alt"
               :label="$t('buttons.mauro_m2hv')"
               show="mauro-m2hv"
+          />
+          <action
+              v-if="headerButtons.mauro_pdflatex"
+              id="mauro_pdflatex-button"
+              icon="rtt"
+              :label="$t('buttons.mauro_pdflatex')"
+              show="mauro-pdflatex"
           />
         </template>
 
@@ -147,12 +147,6 @@
           show="unzip"
       />
       <action
-          v-if="headerButtons.mauro_pdflatex"
-          icon="rtt"
-          :label="$t('buttons.mauro_pdflatex')"
-          show="mauro-pdflatex"
-      />
-      <action
           v-if="headerButtons.mauro_m2ledmac"
           icon="description"
           :label="$t('buttons.mauro_m2ledmac')"
@@ -163,6 +157,12 @@
           icon="list_alt"
           :label="$t('buttons.mauro_m2hv')"
           show="mauro-m2hv"
+      />
+      <action
+          v-if="headerButtons.mauro_pdflatex"
+          icon="rtt"
+          :label="$t('buttons.mauro_pdflatex')"
+          show="mauro-pdflatex"
       />
     </div>
 
