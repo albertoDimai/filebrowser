@@ -45,6 +45,13 @@
             :label="t('buttons.delete')"
             show="delete"
           />
+          <action
+            v-if="headerButtons.unzip"
+            id="unzip-button"
+            icon="unarchive"
+            :label="$t('buttons.unzip')"
+            show="unzip"
+          />
         </template>
 
         <action
@@ -115,8 +122,14 @@
         :label="t('buttons.delete')"
         show="delete"
       />
+      <action
+          v-if="headerButtons.unzip"
+          id="unzip-button"
+          icon="unarchive"
+          :label="$t('buttons.unzip')"
+          show="unzip"
+      />
     </div>
-
     <div v-if="layoutStore.loading">
       <h2 class="message delayed">
         <div class="spinner">
@@ -412,6 +425,7 @@ const headerButtons = computed(() => {
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    unzip: fileStore.selectedCount === 1 && isArchive(fileStore.req!.items[fileStore.selected[0]]) && authStore.user?.perm.share,
   };
 });
 
@@ -936,6 +950,14 @@ const setItemWeight = () => {
   itemWeight.value = listing.value.offsetHeight / itemQuantity;
 };
 
+const isArchive = (f : any) => {
+  if(f.isDir)
+     return false;
+  const ext = f.extension
+  const zip_exts = [".zip",".bz2",".br",".tbz2",".gz",".xz",".rar",".tar"]; //可扩展
+  return zip_exts.indexOf(ext) > -1;
+};
+
 const fillWindow = (fit = false) => {
   if (fileStore.req === null) return;
 
@@ -956,5 +978,6 @@ const fillWindow = (fit = false) => {
 
   // Set the number of displayed items
   showLimit.value = showQuantity > totalItems ? totalItems : showQuantity;
+
 };
 </script>

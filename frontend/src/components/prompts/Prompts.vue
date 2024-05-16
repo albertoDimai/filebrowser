@@ -24,13 +24,17 @@ import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
 import ShareDelete from "./ShareDelete.vue";
 import Upload from "./Upload.vue";
+  import Unzip from "./Unzip.vue";
+
 import DiscardEditorChanges from "./DiscardEditorChanges.vue";
+
 
 const layoutStore = useLayoutStore();
 
 const { currentPromptName } = storeToRefs(layoutStore);
 
 const closeModal = ref<() => Promise<string>>();
+
 
 const components = new Map<string, any>([
   ["info", Info],
@@ -39,6 +43,7 @@ const components = new Map<string, any>([
   ["rename", Rename],
   ["move", Move],
   ["copy", Copy],
+  ["unzip", Unzip],
   ["newFile", NewFile],
   ["newDir", NewDir],
   ["download", Download],

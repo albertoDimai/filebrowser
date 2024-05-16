@@ -150,25 +150,28 @@ async function postResources(
   });
 }
 
-function moveCopy(
-  items: any[],
-  copy = false,
-  overwrite = false,
-  rename = false
-) {
-  const promises = [];
+
+
+  function moveCopy(items: any[], copy = false, overwrite = false, rename = false, unzip = false) {
+    const promises = [];
 
   for (const item of items) {
     const from = item.from;
     const to = encodeURIComponent(removePrefix(item.to ?? ""));
     const url = `${from}?action=${
-      copy ? "copy" : "rename"
-    }&destination=${to}&override=${overwrite}&rename=${rename}`;
+      unzip ? "unzip" : copy ? "copy" : "rename"
+    }&destination=${to}&override=${overwrite}&rename=${rename}&unzip=${unzip}`;
+    console.log(url);
     promises.push(resourceAction(url, "PATCH"));
   }
 
   return Promise.all(promises);
 }
+
+  export function unzip(items : any[]) {
+    console.log("unzip fn")
+    return moveCopy(items, false, false,false, true);
+  }
 
 export function move(items: any[], overwrite = false, rename = false) {
   return moveCopy(items, false, overwrite, rename);

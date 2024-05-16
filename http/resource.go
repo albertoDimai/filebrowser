@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	//"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -18,6 +19,7 @@ import (
 	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
+	"github.com/mholt/archiver"
 )
 
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -190,7 +192,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		if err != nil {
 			return errToStatus(err), err
 		}
-		if dst == "/" || src == "/" {
+		if (dst == "/" || src == "/") && action != "unzip" {
 			return http.StatusForbidden, nil
 		}
 
@@ -201,7 +203,8 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 
 		override := r.URL.Query().Get("override") == "true"
 		rename := r.URL.Query().Get("rename") == "true"
-		if !override && !rename {
+		unzip := r.URL.Query().Get("unzip") == "true"
+		if !override && !rename && !unzip {
 			if _, err = d.user.Fs.Stat(dst); err == nil {
 				return http.StatusConflict, nil
 			}
@@ -299,7 +302,6 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		if !d.user.Perm.Create {
 			return fbErrors.ErrPermissionDenied
 		}
-
 		return fileutils.Copy(d.user.Fs, src, dst)
 	case "rename":
 		if !d.user.Perm.Rename {
@@ -327,6 +329,13 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		}
 
 		return fileutils.MoveFile(d.user.Fs, src, dst)
+	case "unzip":
+		if !d.user.Perm.Unzip {
+			return fbErrors.ErrPermissionDenied
+		}
+		src = d.user.FullPath(src)
+		dst = d.user.FullPath(filepath.Dir(dst))
+		return archiver.Unarchive(src, dst)
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
 	}
