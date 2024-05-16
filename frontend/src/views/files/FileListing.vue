@@ -425,7 +425,7 @@ const headerButtons = computed(() => {
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
-    unzip: fileStore.selectedCount === 1 && isArchive(fileStore.req!.items[fileStore.selected[0]]) && authStore.user?.perm.share,
+    unzip: fileStore.selectedCount === 1 && isArchive(fileStore.req!.items[fileStore.selected[0]]) && authStore.user?.perm.unzip,
   };
 });
 

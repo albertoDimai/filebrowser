@@ -17,7 +17,7 @@
         class="card-action"
         style="display: flex; align-items: center; justify-content: space-between"
     >
-      <template v-if="user.perm.create">
+      <template v-if="user.perm.unzip">
         <button
             class="button button--flat"
             @click="$refs.fileList.createDir()"
