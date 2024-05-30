@@ -52,6 +52,29 @@
             :label="$t('buttons.unzip')"
             show="unzip"
           />
+
+          <action
+              v-if="headerButtons.mauro_pdflatex"
+              id="mauro_pdflatex-button"
+              icon="rtt"
+              :label="$t('buttons.mauro_pdflatex')"
+              show="mauro_pdflatex"
+          />
+          <action
+              v-if="headerButtons.mauro_m2ledmac"
+              id="mauro_m2ledmac-button"
+              icon="description"
+              :label="$t('buttons.mauro_m2ledmac')"
+              show="mauro_m2ledmac"
+          />
+          <action
+              v-if="headerButtons.mauro_m2hv"
+              id="mauro_m2hv-button"
+              icon="list_alt"
+              :label="$t('buttons.mauro_m2hv')"
+              show="mauro_m2hv"
+          />
+
         </template>
 
         <action
@@ -128,6 +151,27 @@
           icon="unarchive"
           :label="$t('buttons.unzip')"
           show="unzip"
+      />
+      <action
+          v-if="headerButtons.mauro_pdflatex"
+          id="mauro_pdflatex-button"
+          icon="rtt"
+          :label="$t('buttons.mauro_pdflatex')"
+          show="mauro_pdflatex"
+      />
+      <action
+          v-if="headerButtons.mauro_m2ledmac"
+          id="mauro_m2ledmac-button"
+          icon="description"
+          :label="$t('buttons.mauro_m2ledmac')"
+          show="mauro_m2ledmac"
+      />
+      <action
+          v-if="headerButtons.mauro_m2hv"
+          id="mauro_m2hv-button"
+          icon="list_alt"
+          :label="$t('buttons.mauro_m2hv')"
+          show="mauro_m2hv"
       />
     </div>
     <div v-if="layoutStore.loading">
@@ -426,6 +470,9 @@ const headerButtons = computed(() => {
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
     unzip: fileStore.selectedCount === 1 && isArchive(fileStore.req!.items[fileStore.selected[0]]) && authStore.user?.perm.unzip,
+    mauro_pdflatex: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
+    mauro_m2hv: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
+    mauro_m2ledmac: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]]) && (true || authStore.user?.perm.mauro),
   };
 });
 
@@ -956,6 +1003,14 @@ const isArchive = (f : any) => {
   const ext = f.extension
   const zip_exts = [".zip",".bz2",".br",".tbz2",".gz",".xz",".rar",".tar"]; //可扩展
   return zip_exts.indexOf(ext) > -1;
+};
+
+const isMauroFile = (f : any) => {
+  if(f.isDir)
+    return false;
+  const ext = f.extension
+  const tex_exts = [".tex",".Tex",".teX",".TEX"]; //可扩展
+  return tex_exts.indexOf(ext) > -1;
 };
 
 const fillWindow = (fit = false) => {

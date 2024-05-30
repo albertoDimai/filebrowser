@@ -46,6 +46,7 @@ interface Permissions {
   shell: boolean;
   upload: boolean;
   unzip: boolean;
+  mauro: boolean;
 
 }
 

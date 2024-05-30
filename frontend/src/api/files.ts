@@ -168,6 +168,21 @@ async function postResources(
   return Promise.all(promises);
 }
 
+
+export function mauro(command: string, item : any, commandline:string ,owerwrite : boolean, rename: boolean) {
+  console.log("mauro fn", item)
+  // return moveCopy(items, false, false,false, false, true);
+  const promises = [];
+  const from = item.from;
+  const to = encodeURIComponent(removePrefix(item.to ?? ""));
+  const url = `${from}?action=mauro:${command}&destination=${to}&commandline=${commandline}`;
+  console.log(url);
+  promises.push(resourceAction(url, "PATCH"));
+
+
+  return Promise.all(promises);
+}
+
   export function unzip(items : any[]) {
     console.log("unzip fn")
     return moveCopy(items, false, false,false, true);

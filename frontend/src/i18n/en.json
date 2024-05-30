@@ -1,6 +1,9 @@
 {
   "buttons": {
-    "unzip": "unzip",
+    "mauro_pdflatex": "PdfLaTeX",
+    "mauro_m2ledmac": "m2ledmac",
+    "mauro_m2hv": "m2hv",
+    "unzip": "Unzip",
     "cancel": "Cancel",
     "clear": "Clear",
     "close": "Close",
@@ -104,6 +107,9 @@
   },
   "permanent": "Permanent",
   "prompts": {
+    "mauro_pdflatex": "Mauro/PdfLaTeX",
+    "mauro_m2ledmac": "Mauro/m2ledmac",
+    "mauro_m2hv": "Mauro/m2hv",
     "unzip": "Unzip",
     "copy": "Copy",
     "copyMessage": "Choose the location to copy your files to:",
@@ -208,7 +214,8 @@
       "modify": "Edit files",
       "rename": "Rename or move files and directories",
       "share": "Share files",
-      "unzip": "unzip"
+      "unzip": "Unzip",
+      "mauro": "Mauro"
     },
     "permissions": "Permissions",
     "permissionsHelp": "You can set the user to be an administrator or choose the permissions individually. If you select \"Administrator\", all of the other options will be automatically checked. The management of users remains a privilege of an administrator.\n",

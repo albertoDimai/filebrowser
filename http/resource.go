@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os/exec"
+
 	//"log"
 	"net/http"
 	"net/url"
@@ -196,28 +198,31 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
-		err = checkParent(src, dst)
-		if err != nil {
-			return http.StatusBadRequest, err
-		}
+		fmt.Printf("resourcePatchHandler, %s, %s, %s\n", src, action,dst)
 
-		override := r.URL.Query().Get("override") == "true"
-		rename := r.URL.Query().Get("rename") == "true"
-		unzip := r.URL.Query().Get("unzip") == "true"
-		if !override && !rename && !unzip {
-			if _, err = d.user.Fs.Stat(dst); err == nil {
-				return http.StatusConflict, nil
+		if action != "mauro" && !strings.HasPrefix(action, "mauro:") { //any command starting with mauro is handled differently
+			err = checkParent(src, dst)
+			if err != nil {
+				return http.StatusBadRequest, err
+			}
+
+			override := r.URL.Query().Get("override") == "true"
+			rename := r.URL.Query().Get("rename") == "true"
+			unzip := r.URL.Query().Get("unzip") == "true"
+			if !override && !rename && !unzip {
+				if _, err = d.user.Fs.Stat(dst); err == nil {
+					return http.StatusConflict, nil
+				}
+			}
+			if rename {
+				dst = addVersionSuffix(dst, d.user.Fs)
+			}
+
+			// Permission for overwriting the file
+			if override && !d.user.Perm.Modify {
+				return http.StatusForbidden, nil
 			}
 		}
-		if rename {
-			dst = addVersionSuffix(dst, d.user.Fs)
-		}
-
-		// Permission for overwriting the file
-		if override && !d.user.Perm.Modify {
-			return http.StatusForbidden, nil
-		}
-
 		err = d.RunHook(func() error {
 			return patchAction(r.Context(), action, src, dst, d, fileCache)
 		}, action, src, dst, d.user)
@@ -336,6 +341,37 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		src = d.user.FullPath(src)
 		dst = d.user.FullPath(filepath.Dir(dst))
 		return archiver.Unarchive(src, dst)
+
+	case "mauro:pdflatex":
+		if !d.user.Perm.Unzip {
+			return fbErrors.ErrPermissionDenied
+		}
+		src = d.user.FullPath(src)
+		cmd := exec.Command("pdflatex.wrapper.sh", src) //nolint:gosec
+		return cmd.Start()
+
+	case "mauro:m2hv":
+		if false /*|| !d.user.Perm.Mauro*/ {
+			return fbErrors.ErrPermissionDenied
+		}
+		println("--------------------")
+		println(src)
+		println(dst)
+		println("--------------------++")
+		src = d.user.FullPath(src)
+		dst = d.user.FullPath(dst)
+		println(src)
+		println(dst)
+		cmd := exec.Command("m2hv.wrapper.sh", src, dst) //nolint:gosec
+		println("--------------------")
+		return cmd.Run()
+	case "mauro:m2ledmac":
+		if false /*|| !d.user.Perm.Mauro*/ {
+			return fbErrors.ErrPermissionDenied
+		}
+		src = d.user.FullPath(src)
+		cmd := exec.Command("m2ledmac.wrapper.sh", src) //nolint:gosec
+		return cmd.Run()
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
 	}

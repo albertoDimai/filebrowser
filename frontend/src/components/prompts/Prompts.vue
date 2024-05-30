@@ -24,7 +24,10 @@ import ReplaceRename from "./ReplaceRename.vue";
 import Share from "./Share.vue";
 import ShareDelete from "./ShareDelete.vue";
 import Upload from "./Upload.vue";
-  import Unzip from "./Unzip.vue";
+import Unzip from "./Unzip.vue";
+import Mauro_M2L from "./Mauro_m2ledmac.vue";
+import Mauro_PDF from "./Mauro_pdflatex.vue";
+import Mauro_M2H from "./Mauro_m2hv.vue";
 
 import DiscardEditorChanges from "./DiscardEditorChanges.vue";
 
@@ -44,6 +47,9 @@ const components = new Map<string, any>([
   ["move", Move],
   ["copy", Copy],
   ["unzip", Unzip],
+  ["mauro_m2hv", Mauro_M2H],
+  ["mauro_m2ledmac", Mauro_M2L],
+  ["mauro_pdflatex", Mauro_PDF],
   ["newFile", NewFile],
   ["newDir", NewDir],
   ["download", Download],
