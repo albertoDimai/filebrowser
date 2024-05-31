@@ -32,6 +32,16 @@
                 <i class="material-icons">content_paste</i>
               </button>
             </td>
+            <td class="small">
+              <button
+                  class="action copy-clipboard"
+                  :aria-label="$t('buttons.copyToClipboard')"
+                  :title="$t('buttons.copyToClipboard')"
+                  @click="openInNewTab(buildPublicLink(link))"
+              >
+                <i class="material-icons">open_in_new</i>
+              </button>
+            </td>
             <td class="small" v-if="hasDownloadLink()">
               <button
                 class="action copy-clipboard"
@@ -246,6 +256,17 @@ export default {
     },
     buildLink(share) {
       return api.getShareURL(share);
+    },
+    buildPublicLink(share) {
+      const shareLink = this.buildLink(share);
+      console.log("shareLink", shareLink)
+      const publicLink = shareLink.replace("/share/","/api/public-inline/dl/") + "/index.html";
+      console.log("publicLink", publicLink)
+
+      return publicLink
+    },
+    openInNewTab(url) {
+      window.open(url,'_blank');
     },
     hasDownloadLink() {
       return (

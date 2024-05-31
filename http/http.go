@@ -92,5 +92,9 @@ func NewHandler(
 	public.PathPrefix("/dl").Handler(monkey(publicDlHandler, "/api/public/dl/")).Methods("GET")
 	public.PathPrefix("/share").Handler(monkey(publicShareHandler, "/api/public/share/")).Methods("GET")
 
+	publicinline := api.PathPrefix("/public-inline").Subrouter()
+	publicinline.PathPrefix("/dl").Handler(monkey(publicDlHandlerInline, "/api/public-inline/dl/")).Methods("GET")
+
+
 	return stripPrefix(server.BaseURL, r), nil
 }

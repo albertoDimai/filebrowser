@@ -67,7 +67,12 @@ func parseQueryAlgorithm(r *http.Request) (string, archiver.Writer, error) {
 }
 
 func setContentDisposition(w http.ResponseWriter, r *http.Request, file *files.FileInfo) {
+
+	println("finally in the content")
+	println("inline: " + r.URL.Query().Get("inline"))
+
 	if r.URL.Query().Get("inline") == "true" {
+		println("inlining")
 		w.Header().Set("Content-Disposition", "inline")
 	} else {
 		// As per RFC6266 section 4.3
@@ -199,6 +204,10 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 }
 
 func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo) (int, error) {
+
+	println("and here")
+	println("inline: " + r.URL.Query().Get("inline"))
+
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return http.StatusInternalServerError, err
