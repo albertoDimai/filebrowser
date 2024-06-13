@@ -1,5 +1,5 @@
 <template>
-  <div class="card floating">
+  <div class="card floating" style="max-width: 40em;">
     <div class="card-title">
       <h2>{{ $t("prompts.mauro_m2hv") }}</h2>
     </div>
@@ -11,10 +11,9 @@
         tabindex="1"
       />
 
-      <hr/>
+      <hr style="margin-bottom: 1.5em;"/>
       <label>Destination Directory Name:
-    <input
-        id="focus-prompt"
+    <input style="margin-bottom: 1em;"
         class="input input--block"
         type="text"
         v-model.trim="outputName"
@@ -24,7 +23,6 @@
 
       <label>Commandline:
         <input
-            id="focus-prompt"
             class="input input--block"
             type="text"
             v-model.trim="commandline"
@@ -162,7 +160,7 @@ export default {
             .mauro("m2hv",item, encodeURIComponent(this.commandline), overwrite, rename)
             .then(() => {
               buttons.success("mauro_m2hv");
-              this.$router.push({ path: this.dest });
+              this.$router.push({path: this.dest + this.outputName + "/m2hv.OUT.log"}); //convenzione
             })
             .catch((e) => {
               buttons.done("mauro_m2hv");
