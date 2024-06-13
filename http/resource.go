@@ -224,7 +224,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			}
 		}
 		err = d.RunHook(func() error {
-			return patchAction(r.Context(), action, src, dst, d, fileCache)
+			return patchAction(r.Context(), action, src, dst, r, d, fileCache)
 		}, action, src, dst, d.user)
 
 		return errToStatus(err), err
@@ -301,7 +301,7 @@ func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) e
 	return nil
 }
 
-func patchAction(ctx context.Context, action, src, dst string, d *data, fileCache FileCache) error {
+func patchAction(ctx context.Context, action, src, dst string, request  *http.Request, d *data, fileCache FileCache) error {
 	switch action {
 	case "copy":
 		if !d.user.Perm.Create {
@@ -354,16 +354,19 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		if false /*|| !d.user.Perm.Mauro*/ {
 			return fbErrors.ErrPermissionDenied
 		}
-		println("--------------------")
-		println(src)
-		println(dst)
-		println("--------------------++")
+
 		src = d.user.FullPath(src)
 		dst = d.user.FullPath(dst)
-		println(src)
-		println(dst)
-		cmd := exec.Command("m2hv.wrapper.sh", src, dst) //nolint:gosec
-		println("--------------------")
+
+		comamndline_arguments := request.URL.Query().Get("commandline");
+		comamndline, err := url.QueryUnescape(comamndline_arguments);
+		if err != nil {
+			return fmt.Errorf("error parsing options %s: %w", comamndline_arguments, fbErrors.ErrInvalidRequestParams)
+		}
+		//
+		println("executing: " + "m2hv.wrapper.sh " + src  + " " + dst + " " +  comamndline )
+
+		cmd := exec.Command("m2hv.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
 	case "mauro:m2ledmac":
 		if false /*|| !d.user.Perm.Mauro*/ {
