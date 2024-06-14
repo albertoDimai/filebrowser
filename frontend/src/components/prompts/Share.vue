@@ -35,8 +35,8 @@
             <td class="small">
               <button
                   class="action copy-clipboard"
-                  :aria-label="$t('buttons.copyToClipboard')"
-                  :title="$t('buttons.copyToClipboard')"
+                  :aria-label="$t('buttons.openInline')"
+                  :title="$t('buttons.openInline')"
                   @click="openInNewTab(buildPublicLink(link))"
               >
                 <i class="material-icons">open_in_new</i>

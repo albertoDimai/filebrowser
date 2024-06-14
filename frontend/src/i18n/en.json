@@ -11,6 +11,7 @@
     "copy": "Copy",
     "copyFile": "Copy file",
     "copyToClipboard": "Copy to clipboard",
+    "openInline": "Open (inline) in new window",
     "copyDownloadLinkToClipboard": "Copy download link to clipboard",
     "create": "Create",
     "delete": "Delete",

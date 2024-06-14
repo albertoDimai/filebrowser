@@ -126,9 +126,21 @@
             >
               <div>
                 <i class="material-icons">open_in_new</i
-                >{{ t("buttons.openFile") }}
+                >{{ t("buttons.openFile")}}
               </div>
             </a>
+            <a
+                target="_blank"
+                :href="inlineLinkDirectory"
+                class="button button--flat"
+                v-if="req.isDir"
+            >
+              <div>
+                <i class="material-icons">open_in_new</i
+                >{{ t("buttons.openFile")}}
+              </div>
+            </a>
+
             <qrcode-vue
               v-if="req.isDir"
               :value="link"
@@ -365,6 +377,13 @@ const raw = computed(() => {
 const inlineLink = computed(() =>
   req.value ? api.getDownloadURL(req.value, true) : ""
 );
+
+
+//Weird but working for now
+const inlineLinkDirectory = computed(() =>
+    req.value ? api.getDownloadURL(req.value, true)  + "index.html": ""
+);
+
 const humanSize = computed(() => {
   if (req.value) {
     return req.value.isDir

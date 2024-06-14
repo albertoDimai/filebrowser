@@ -66,10 +66,18 @@ export function download(
 }
 
 export function getDownloadURL(res: Resource, inline = false) {
-  const params = {
-    ...(inline && { inline: "true" }),
-    ...(res.token && { token: res.token }),
-  };
 
-  return createURL("api/public/dl/" + res.hash + res.path, params, false);
+  //we change how inline urls are created from ?inline=true to path parameter
+  if(!inline) {
+    const params = {
+      ...(res.token && {token: res.token}),
+    };
+
+    return createURL("api/public/dl/" + res.hash + res.path, params, false);
+  } else {
+    const params = {
+      ...(res.token && {token: res.token}),
+    };
+    return createURL("api/public-inline/dl/" + res.hash + res.path, params, false);
+  }
 }
