@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "Cancelar",
+    "clear": "Limpiar",
     "close": "Cerrar",
+    "continue": "Continuar",
     "copy": "Copiar",
     "copyFile": "Copiar archivo",
     "copyToClipboard": "Copiar al portapapeles",
@@ -51,7 +53,6 @@
   },
   "files": {
     "body": "Cuerpo",
-    "clear": "Limpiar",
     "closePreview": "Cerrar vista previa",
     "files": "Archivos",
     "folders": "Carpetas",
@@ -81,31 +82,6 @@
     "f1": "esta información",
     "f2": "renombrar archivo",
     "help": "Ayuda"
-  },
-  "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "Icelandic",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "Niederländisch (Belgien)",
-    "pl": "Polski",
-    "pt": "Português",
-    "ptBR": "Português (Brasil)",
-    "ro": "Românesc",
-    "ru": "Русский",
-    "sk": "Slovenčina",
-    "svSE": "Swedish (Sweden)",
-    "tr" : "Türkçe",
-    "ua": "Українська",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
   },
   "login": {
     "createAnAccount": "Crear una cuenta",
@@ -190,6 +166,7 @@
     "customStylesheet": "Modificar hoja de estilos",
     "defaultUserDescription": "Estas son las configuraciones por defecto para nuevos usuarios.",
     "disableExternalLinks": "Deshabilitar enlaces externos (excepto documentación)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "documentación",
     "examples": "Ejemplos",
     "executeOnShell": "Ejecutar en la shell",

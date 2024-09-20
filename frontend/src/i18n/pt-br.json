@@ -1,7 +1,9 @@
 {
   "buttons": {
     "cancel": "Cancelar",
+    "clear": "Limpar",
     "close": "Fechar",
+    "continue": "Continuar",
     "copy": "Copiar",
     "copyFile": "Copiar arquivo",
     "copyToClipboard": "Copiar",
@@ -51,7 +53,6 @@
   },
   "files": {
     "body": "Corpo",
-    "clear": "Limpar",
     "closePreview": "Fechar pré-visualização",
     "files": "Arquivos",
     "folders": "Pastas",
@@ -81,31 +82,6 @@
     "f1": "esta informação",
     "f2": "renomear arquivo",
     "help": "Ajuda"
-  },
-  "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "",
-    "pl": "Polski",
-    "pt": "Português",
-    "ptBR": "Português (Brasil)",
-    "ro": "",
-    "ru": "Русский",
-    "sk": "Slovenčina",
-    "svSE": "",
-    "tr" : "Türkçe",
-    "ua": "Українська",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
   },
   "login": {
     "createAnAccount": "Criar uma conta",
@@ -190,6 +166,7 @@
     "customStylesheet": "Estilos personalizados",
     "defaultUserDescription": "Estas são as configurações padrão para novos usuários.",
     "disableExternalLinks": "Desabilitar links externos (exceto documentação)",
+    "disableUsedDiskPercentage": "Desabilitar gráfico de porcentagem de disco usado",
     "documentation": "documentação",
     "examples": "Exemplos",
     "executeOnShell": "Executar no console",

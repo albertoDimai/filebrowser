@@ -35,7 +35,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 
 		d.user = user
 
-		file, err := files.NewFileInfo(files.FileOptions{
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       link.Path,
 			Modify:     d.user.Perm.Modify,
@@ -62,7 +62,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 		// set fs root to the shared file/folder
 		d.user.Fs = afero.NewBasePathFs(d.user.Fs, basePath)
 
-		file, err = files.NewFileInfo(files.FileOptions{
+		file, err = files.NewFileInfo(&files.FileOptions{
 			Fs:      d.user.Fs,
 			Path:    filePath,
 			Modify:  d.user.Perm.Modify,
@@ -104,6 +104,44 @@ var publicShareHandler = withHashFile(func(w http.ResponseWriter, r *http.Reques
 	}
 
 	return renderJSON(w, r, file)
+})
+
+var publicDlHandlerInline = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+
+	println("comes here")
+	println("entering inline: " + r.URL.Query().Get("inline"))
+	println("entering with path: " + r.URL.Path)
+	println(d.raw)
+
+	//this does not works
+	//r.URL.Query().Set("inline", "true")
+	params := r.URL.Query()
+	params.Set("inline", "true")
+	r.URL.RawQuery = params.Encode()
+
+	println("then inline: " + r.URL.Query().Get("inline"))
+
+
+	file := d.raw.(*files.FileInfo)
+
+	if !file.IsDir {
+		return rawFileHandler(w, r, file)
+	}
+
+	//println("then then inline: " + r.URL.Query().Get("inline"))
+	//println("path: " + r.URL.RawPath)
+	//println("query: " + r.URL.RawQuery)
+	//println("host: " + r.Host)
+	//println("proto: " + r.Proto)
+
+	println("redirecting to index.html, this probably does not works")
+	http.Redirect(w, r, "./index.html", http.StatusMovedPermanently)
+
+
+	//r.URL.RawQuery +"/index.html", http.StatusMovedPermanently)
+
+	return 0, nil
+	//return rawDirHandler(w, r, d, file)
 })
 
 var publicDlHandler = withHashFile(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {

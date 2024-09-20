@@ -2,9 +2,12 @@ package http
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
-	"log"
+	"os/exec"
+
+	//"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -16,14 +19,14 @@ import (
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/spf13/afero"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	fbErrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 	"github.com/mholt/archiver"
 )
 
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	file, err := files.NewFileInfo(files.FileOptions{
+	file, err := files.NewFileInfo(&files.FileOptions{
 		Fs:         d.user.Fs,
 		Path:       r.URL.Path,
 		Modify:     d.user.Perm.Modify,
@@ -44,7 +47,7 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 
 	if checksum := r.URL.Query().Get("checksum"); checksum != "" {
 		err := file.Checksum(checksum)
-		if err == errors.ErrInvalidOption {
+		if errors.Is(err, fbErrors.ErrInvalidOption) {
 			return http.StatusBadRequest, nil
 		} else if err != nil {
 			return http.StatusInternalServerError, err
@@ -58,12 +61,12 @@ var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 })
 
 func resourceDeleteHandler(fileCache FileCache) handleFunc {
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		if r.URL.Path == "/" || !d.user.Perm.Delete {
 			return http.StatusForbidden, nil
 		}
 
-		file, err := files.NewFileInfo(files.FileOptions{
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
@@ -89,7 +92,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
-		return http.StatusOK, nil
+		return http.StatusNoContent, nil
 	})
 }
 
@@ -101,11 +104,11 @@ func resourcePostHandler(fileCache FileCache) handleFunc {
 
 		// Directories creation on POST.
 		if strings.HasSuffix(r.URL.Path, "/") {
-			err := d.user.Fs.MkdirAll(r.URL.Path, 0775) //nolint:gomnd
+			err := d.user.Fs.MkdirAll(r.URL.Path, files.PermDir)
 			return errToStatus(err), err
 		}
 
-		file, err := files.NewFileInfo(files.FileOptions{
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       r.URL.Path,
 			Modify:     d.user.Perm.Modify,
@@ -181,9 +184,7 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 })
 
 func resourcePatchHandler(fileCache FileCache) handleFunc {
-
-	log.SetFlags(log.Llongfile)
-	return withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
 		src := r.URL.Path
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
@@ -200,12 +201,9 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return http.StatusForbidden, nil
 		}
 
+		fmt.Printf("resourcePatchHandler, %s, %s, %s\n", src, action,dst)
 
-
-		fmt.Printf("Pah: %s, Action: %s\n", src, action ) //Will print 'Hello, Rob and Ken'
-
-
-		if !strings.HasPrefix(action, "mauro:") { //any command starting with mauro is handled differently
+		if action != "mauro" && !strings.HasPrefix(action, "mauro:") { //any command starting with mauro is handled differently
 			err = checkParent(src, dst)
 			if err != nil {
 				return http.StatusBadRequest, err
@@ -229,7 +227,7 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			}
 		}
 		err = d.RunHook(func() error {
-			return patchAction(r.Context(), action, src, dst, d, fileCache)
+			return patchAction(r.Context(), action, src, dst, r, d, fileCache)
 		}, action, src, dst, d.user)
 
 		return errToStatus(err), err
@@ -244,7 +242,7 @@ func checkParent(src, dst string) error {
 
 	rel = filepath.ToSlash(rel)
 	if !strings.HasPrefix(rel, "../") && rel != ".." && rel != "." {
-		return errors.ErrSourceIsParent
+		return fbErrors.ErrSourceIsParent
 	}
 
 	return nil
@@ -270,12 +268,12 @@ func addVersionSuffix(source string, fs afero.Fs) string {
 
 func writeFile(fs afero.Fs, dst string, in io.Reader) (os.FileInfo, error) {
 	dir, _ := path.Split(dst)
-	err := fs.MkdirAll(dir, 0775) //nolint:gomnd
+	err := fs.MkdirAll(dir, files.PermDir)
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775) //nolint:gomnd
+	file, err := fs.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, files.PermFile)
 	if err != nil {
 		return nil, err
 	}
@@ -306,25 +304,21 @@ func delThumbs(ctx context.Context, fileCache FileCache, file *files.FileInfo) e
 	return nil
 }
 
-func patchAction(ctx context.Context, action, src, dst string, d *data, fileCache FileCache) error {
-
-	fmt.Printf("Action: #%v#\n", action) //Will print
-
+func patchAction(ctx context.Context, action, src, dst string, request  *http.Request, d *data, fileCache FileCache) error {
 	switch action {
-	// TODO: use enum
 	case "copy":
 		if !d.user.Perm.Create {
-			return errors.ErrPermissionDenied
+			return fbErrors.ErrPermissionDenied
 		}
 		return fileutils.Copy(d.user.Fs, src, dst)
 	case "rename":
 		if !d.user.Perm.Rename {
-			return errors.ErrPermissionDenied
+			return fbErrors.ErrPermissionDenied
 		}
 		src = path.Clean("/" + src)
 		dst = path.Clean("/" + dst)
 
-		file, err := files.NewFileInfo(files.FileOptions{
+		file, err := files.NewFileInfo(&files.FileOptions{
 			Fs:         d.user.Fs,
 			Path:       src,
 			Modify:     d.user.Perm.Modify,
@@ -345,34 +339,47 @@ func patchAction(ctx context.Context, action, src, dst string, d *data, fileCach
 		return fileutils.MoveFile(d.user.Fs, src, dst)
 	case "unzip":
 		if !d.user.Perm.Unzip {
-			return errors.ErrPermissionDenied
+			return fbErrors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
-		dst = d.user.FullPath(dst)
+		dst = d.user.FullPath(filepath.Dir(dst))
 		return archiver.Unarchive(src, dst)
+
 	case "mauro:pdflatex":
-		if !d.user.Perm.Mauro {
-			return errors.ErrPermissionDenied
+		if !d.user.Perm.Unzip {
+			return fbErrors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
 		cmd := exec.Command("pdflatex.wrapper.sh", src) //nolint:gosec
-		return cmd.Run()
+		return cmd.Start()
+
 	case "mauro:m2hv":
-		if !d.user.Perm.Mauro {
-			return errors.ErrPermissionDenied
+		if false /*|| !d.user.Perm.Mauro*/ {
+			return fbErrors.ErrPermissionDenied
 		}
+
 		src = d.user.FullPath(src)
-		cmd := exec.Command("m2hv.wrapper.sh", src) //nolint:gosec
+		dst = d.user.FullPath(dst)
+
+		comamndline_arguments := request.URL.Query().Get("commandline");
+		comamndline, err := url.QueryUnescape(comamndline_arguments);
+		if err != nil {
+			return fmt.Errorf("error parsing options %s: %w", comamndline_arguments, fbErrors.ErrInvalidRequestParams)
+		}
+		//
+		println("executing: " + "m2hv.wrapper.sh " + src  + " " + dst + " " +  comamndline )
+
+		cmd := exec.Command("m2hv.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
 	case "mauro:m2ledmac":
-		if !d.user.Perm.Mauro {
-			return errors.ErrPermissionDenied
+		if false /*|| !d.user.Perm.Mauro*/ {
+			return fbErrors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
 		cmd := exec.Command("m2ledmac.wrapper.sh", src) //nolint:gosec
 		return cmd.Run()
 	default:
-		return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
+		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
 	}
 }
 
@@ -382,7 +389,7 @@ type DiskUsageResponse struct {
 }
 
 var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	file, err := files.NewFileInfo(files.FileOptions{
+	file, err := files.NewFileInfo(&files.FileOptions{
 		Fs:         d.user.Fs,
 		Path:       r.URL.Path,
 		Modify:     d.user.Perm.Modify,

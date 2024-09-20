@@ -40,10 +40,6 @@
       <input type="checkbox" :disabled="admin" v-model="perm.unzip" />
       {{ $t("settings.perm.unzip") }}
     </p>
-    <p>
-      <input type="checkbox" :disabled="admin" v-model="perm.mauro" />
-      {{ $t("settings.perm.mauro") }}
-    </p>
   </div>
 </template>
 

@@ -2,6 +2,230 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.30.0](https://github.com/filebrowser/filebrowser/compare/v2.29.0...v2.30.0) (2024-05-19)
+
+
+### Features
+
+* allow multi-select with SHIFT key in singleClick mode ([#3185](https://github.com/filebrowser/filebrowser/issues/3185)) ([2e47a03](https://github.com/filebrowser/filebrowser/commit/2e47a038d63de8f848b070578c1d71f765438a24))
+* Enhance MIME Type Detection for Additional File Extensions ([#3183](https://github.com/filebrowser/filebrowser/issues/3183)) ([be62f56](https://github.com/filebrowser/filebrowser/commit/be62f56782551e17d6d5dc23bc29cc56ef961a66))
+
+
+### Bug Fixes
+
+* add overlay for sidebar on mobile ([#3197](https://github.com/filebrowser/filebrowser/issues/3197)) ([3b48f75](https://github.com/filebrowser/filebrowser/commit/3b48f75301287fe94cbbacff184b4db03f37f7ea))
+* current folder name in page title ([#3200](https://github.com/filebrowser/filebrowser/issues/3200)) ([e336a25](https://github.com/filebrowser/filebrowser/commit/e336a25ad29ed8b956169d426992860a877ee551))
+* Fixing the inability to play MKV video files online and enhancing the auxiliary features of the VideoPlayer. ([#3181](https://github.com/filebrowser/filebrowser/issues/3181)) ([782375b](https://github.com/filebrowser/filebrowser/commit/782375b1cb4c4f954468c30ec277ce021c82b40d))
+* shell window size ([#3198](https://github.com/filebrowser/filebrowser/issues/3198)) ([4c5b612](https://github.com/filebrowser/filebrowser/commit/4c5b612cb2563817f9da50413c7cf9e89b4c4d4a))
+* The file type icon in the file list is sensitive to the case of the suffix name ([#3187](https://github.com/filebrowser/filebrowser/issues/3187)) ([a9c327c](https://github.com/filebrowser/filebrowser/commit/a9c327cc0687796a3c7bfafd4ddabf4342859e31))
+
+## [2.29.0](https://github.com/filebrowser/filebrowser/compare/v2.28.0...v2.29.0) (2024-04-30)
+
+
+### Features
+
+* Display Upload Progress as Percentage and File Size / Total File Size ([#3111](https://github.com/filebrowser/filebrowser/issues/3111)) ([236ca63](https://github.com/filebrowser/filebrowser/commit/236ca637f99e373adfeaaefc5db6af50bd15b6bf))
+* migrate to vue 3 ([#2689](https://github.com/filebrowser/filebrowser/issues/2689)) ([5100e58](https://github.com/filebrowser/filebrowser/commit/5100e587d73831ecdb5e3bd35a78fef96ad248a4))
+
+
+### Bug Fixes
+
+* abort upload behavior to properly handle server-side deletion and frontend state reset ([#3114](https://github.com/filebrowser/filebrowser/issues/3114)) ([434e49b](https://github.com/filebrowser/filebrowser/commit/434e49bf59e4ddf7ec90893fa3fd53faee8c9cbb))
+* apply proper zindex to modal dialogs ([#3172](https://github.com/filebrowser/filebrowser/issues/3172)) ([821f51e](https://github.com/filebrowser/filebrowser/commit/821f51ea5ad1f5c2eb72441bc761031cacee43e1))
+* correct list item selector ([#3126](https://github.com/filebrowser/filebrowser/issues/3126)) ([#3147](https://github.com/filebrowser/filebrowser/issues/3147)) ([22a05e1](https://github.com/filebrowser/filebrowser/commit/22a05e1f02a083cf7b630e16873dad0de89b7854))
+* don't redirect to login when no auth ([#3165](https://github.com/filebrowser/filebrowser/issues/3165)) ([da5a6e0](https://github.com/filebrowser/filebrowser/commit/da5a6e051faa80134c2adf4e621426cbdf046c88))
+* Frontend bug, administrators unable to delete users ([#3170](https://github.com/filebrowser/filebrowser/issues/3170)) ([bee71d9](https://github.com/filebrowser/filebrowser/commit/bee71d93fee137cdd807cd8f7716c7da0830fae7))
+* handle quotes in healthcheck.sh ([#3130](https://github.com/filebrowser/filebrowser/issues/3130)) ([18f04a7](https://github.com/filebrowser/filebrowser/commit/18f04a7d26186927f51f46354f3b2164a68f1b41))
+* the copy method in clipboard.ts ([#3177](https://github.com/filebrowser/filebrowser/issues/3177)) ([4786187](https://github.com/filebrowser/filebrowser/commit/4786187852b8eef07e40aa00cd159ccc1e7e79dc))
+
+
+### Build
+
+* bump go version to 1.22.1 ([bbd0abb](https://github.com/filebrowser/filebrowser/commit/bbd0abbdfdbb3ddf3326247b7c6d925751dfabcb))
+* bump go version to 1.22.2 ([#3158](https://github.com/filebrowser/filebrowser/issues/3158)) ([a9da7fd](https://github.com/filebrowser/filebrowser/commit/a9da7fd56c849b5a13133136b35ef5ebee622962))
+* **deps:** bump golang.org/x/net from 0.22.0 to 0.23.0 ([#3133](https://github.com/filebrowser/filebrowser/issues/3133)) ([6b77b8d](https://github.com/filebrowser/filebrowser/commit/6b77b8d683f7357ef71af678550e78910c10ddeb))
+
+## [2.28.0](https://github.com/filebrowser/filebrowser/compare/v2.27.0...v2.28.0) (2024-04-01)
+
+
+### Features
+
+* allow to configure if home directory is automatically created from cli ([#2963](https://github.com/filebrowser/filebrowser/issues/2963)) ([a4b089a](https://github.com/filebrowser/filebrowser/commit/a4b089a6dbf9821ecede428cd7d13e69c8b85231))
+* auto hiding header bar in preview to enlarge the preview window ([#3024](https://github.com/filebrowser/filebrowser/issues/3024)) ([d706506](https://github.com/filebrowser/filebrowser/commit/d70650689c34ce9f631fda6a453fd521faef22fa))
+* close editor when click escape key ([#2947](https://github.com/filebrowser/filebrowser/issues/2947)) ([70c8261](https://github.com/filebrowser/filebrowser/commit/70c826133b8578b8712e6db8f762a15a076cd9a9))
+* enable preview in shared folder ([#3055](https://github.com/filebrowser/filebrowser/issues/3055)) ([4c233c3](https://github.com/filebrowser/filebrowser/commit/4c233c3db39ea5a00d6e602ec0ecbddecb590877))
+* focus editor when opened ([#2946](https://github.com/filebrowser/filebrowser/issues/2946)) ([b19710e](https://github.com/filebrowser/filebrowser/commit/b19710efca6daa7af56dc211d0051d500d2eea22))
+* freezing the list in the backgroud while previewing a file ([#3004](https://github.com/filebrowser/filebrowser/issues/3004)) ([e167c3e](https://github.com/filebrowser/filebrowser/commit/e167c3e1efed8b16be45d994a8d443fda1d8cf49))
+* prompt to confirm discard editor changes ([#2948](https://github.com/filebrowser/filebrowser/issues/2948)) ([fb1a09c](https://github.com/filebrowser/filebrowser/commit/fb1a09c7c172b913c12b30975ca545e505df0c05))
+* select multiple files with ctrl even with singleClick option ([#2953](https://github.com/filebrowser/filebrowser/issues/2953)) ([d49c3df](https://github.com/filebrowser/filebrowser/commit/d49c3dfacfc0ff07e620b3ad2700e64927b06235))
+
+
+### Bug Fixes
+
+* dashboard buttons position in rtl layout ([#2949](https://github.com/filebrowser/filebrowser/issues/2949)) ([2cfee21](https://github.com/filebrowser/filebrowser/commit/2cfee2183c98d0cb67fc4e9788644ed4278e25bc))
+* editor discard prompt ([#2990](https://github.com/filebrowser/filebrowser/issues/2990)) ([34a0817](https://github.com/filebrowser/filebrowser/commit/34a08170c894321d49bb843e259a0e59e2245998))
+* files and directories are created with the correct permissions ([#2966](https://github.com/filebrowser/filebrowser/issues/2966)) ([5c5ab6b](https://github.com/filebrowser/filebrowser/commit/5c5ab6b8750a5168f0ae2a26bd5de41e0b6d9637))
+* fix lint warnings ([#2976](https://github.com/filebrowser/filebrowser/issues/2976)) ([fe5ca74](https://github.com/filebrowser/filebrowser/commit/fe5ca74aa1e4257e5cb36f1de58daa0c3548319f))
+* **healthcheck:** use address configured if not empty ([#2938](https://github.com/filebrowser/filebrowser/issues/2938)) ([81cd8fc](https://github.com/filebrowser/filebrowser/commit/81cd8fc6d307b00af278beefcdbad4158a128fea))
+* keyboard shortcut to confirm prompts ([#2932](https://github.com/filebrowser/filebrowser/issues/2932)) ([ff9502f](https://github.com/filebrowser/filebrowser/commit/ff9502ff34790c46f31d175911cd51c9b62804fb))
+* moment locale ([#2952](https://github.com/filebrowser/filebrowser/issues/2952)) ([883383a](https://github.com/filebrowser/filebrowser/commit/883383a5715d82883c51138dfb547805dfad2a3c))
+* shell direction ([#2980](https://github.com/filebrowser/filebrowser/issues/2980)) ([6d7ba65](https://github.com/filebrowser/filebrowser/commit/6d7ba65faf576ee4ed095f3d0c41775b21e498de))
+* stay in the same position after renaming or deleting ([#3039](https://github.com/filebrowser/filebrowser/issues/3039)) ([cdf8def](https://github.com/filebrowser/filebrowser/commit/cdf8def3304315bef261da7f52f8599d90b1f0f0))
+
+
+### Build
+
+* **deps-dev:** bump vite from 4.4.12 to 4.5.2 in /frontend ([#2951](https://github.com/filebrowser/filebrowser/issues/2951)) ([bf36cc0](https://github.com/filebrowser/filebrowser/commit/bf36cc00f1369dd10a422f230ccabcbeefae1517))
+* **deps:** bump google.golang.org/protobuf from 1.31.0 to 1.33.0 ([#3045](https://github.com/filebrowser/filebrowser/issues/3045)) ([05bfae2](https://github.com/filebrowser/filebrowser/commit/05bfae264a7a477d1b7db582f06f4efb24d26ec9))
+* **deps:** bump google.golang.org/protobuf in /tools ([#3044](https://github.com/filebrowser/filebrowser/issues/3044)) ([7797a4e](https://github.com/filebrowser/filebrowser/commit/7797a4ef18038a877df31bd34f2ebf70d18823f8))
+
+## [2.27.0](https://github.com/filebrowser/filebrowser/compare/v2.26.0...v2.27.0) (2024-01-02)
+
+
+### Features
+
+* allow setting theme via cli ([#2881](https://github.com/filebrowser/filebrowser/issues/2881)) ([748af71](https://github.com/filebrowser/filebrowser/commit/748af7172ce96f0b66c394e88839bd57c194ffc7))
+* display image resolutions in file details ([#2830](https://github.com/filebrowser/filebrowser/issues/2830)) ([a09dfa8](https://github.com/filebrowser/filebrowser/commit/a09dfa8d9f190243d811a841de44c4abb4403d87))
+* make user session timeout configurable by flags ([#2845](https://github.com/filebrowser/filebrowser/issues/2845)) ([391a078](https://github.com/filebrowser/filebrowser/commit/391a078cd486e618c95a0c5850326076cbc025b6))
+
+
+### Bug Fixes
+
+* delete message when delete file from preview ([3264cea](https://github.com/filebrowser/filebrowser/commit/3264cea8307dca9ab5463dc81f2a10a817eb3d54))
+* fix typo ([#2843](https://github.com/filebrowser/filebrowser/issues/2843)) ([4dbc802](https://github.com/filebrowser/filebrowser/commit/4dbc802972c930f5f42fc27507fac35c28c42afd))
+* set correct port in docker healthcheck ([#2812](https://github.com/filebrowser/filebrowser/issues/2812)) ([d59ad59](https://github.com/filebrowser/filebrowser/commit/d59ad594b8649f57f61453b0dfbc350c57b690a2))
+* typo in build error [#2903](https://github.com/filebrowser/filebrowser/issues/2903) ([#2904](https://github.com/filebrowser/filebrowser/issues/2904)) ([c4e955a](https://github.com/filebrowser/filebrowser/commit/c4e955acf4a1a8f8e8e94f697ffc838515e69a60))
+
+
+### Build
+
+* **deps-dev:** bump vite from 4.4.9 to 4.4.12 in /frontend ([#2862](https://github.com/filebrowser/filebrowser/issues/2862)) ([fc2ee37](https://github.com/filebrowser/filebrowser/commit/fc2ee373536584d024f7def62f350bdbb712d927))
+* **deps:** bump golang.org/x/crypto from 0.14.0 to 0.17.0 ([#2890](https://github.com/filebrowser/filebrowser/issues/2890)) ([821fba4](https://github.com/filebrowser/filebrowser/commit/821fba41a25ba99d47641f01b10ac51960157888))
+
+## [2.26.0](https://github.com/filebrowser/filebrowser/compare/v2.25.0...v2.26.0) (2023-11-02)
+
+
+### Features
+
+* add modern greek translation ([#2778](https://github.com/filebrowser/filebrowser/issues/2778)) ([c3079d3](https://github.com/filebrowser/filebrowser/commit/c3079d30e22385d7e677f172324cd9cbab6487ce))
+* make user session timeout configurable ([#2753](https://github.com/filebrowser/filebrowser/issues/2753)) ([7fabadc](https://github.com/filebrowser/filebrowser/commit/7fabadc871ea91ea22fe9454e2ca4b33e5c211be))
+
+
+### Bug Fixes
+
+* avoid the front-end calling api/renew loop ([#2792](https://github.com/filebrowser/filebrowser/issues/2792)) ([edd808f](https://github.com/filebrowser/filebrowser/commit/edd808f124f4ada99bcbe4bca98ddbe20e5a424c))
+* disable static resource files listing ([da1fe7c](https://github.com/filebrowser/filebrowser/commit/da1fe7c9d76a9c6a25bfa19ebd6cf8023eff5d62))
+* display file size as base 2 (KiB instead of KB) ([#2779](https://github.com/filebrowser/filebrowser/issues/2779)) ([cdcd9a3](https://github.com/filebrowser/filebrowser/commit/cdcd9a313aa50c2e6806a182b6838462d42dcafe))
+* goreleaser yaml ([4d0a68e](https://github.com/filebrowser/filebrowser/commit/4d0a68e7875274f4c939f2bfa15739a9b0ecf70a))
+* revert fetchURL changes in auth (Fixes [#2729](https://github.com/filebrowser/filebrowser/issues/2729)) ([#2739](https://github.com/filebrowser/filebrowser/issues/2739)) ([bd3c194](https://github.com/filebrowser/filebrowser/commit/bd3c1941ff8289a5dae877e08f7e25fa9b2a92c5))
+* solve docker build failed issue ([#2797](https://github.com/filebrowser/filebrowser/issues/2797)) ([6a31af6](https://github.com/filebrowser/filebrowser/commit/6a31af6c0a144128af865d802c8039fa5250e946))
+
+
+### Build
+
+* **deps-dev:** bump postcss from 8.4.27 to 8.4.31 in /frontend ([#2749](https://github.com/filebrowser/filebrowser/issues/2749)) ([21d361a](https://github.com/filebrowser/filebrowser/commit/21d361ad308d109d2a6b323597019aaa09ce1781))
+* **deps:** bump @babel/traverse in /frontend ([#2775](https://github.com/filebrowser/filebrowser/issues/2775)) ([bb4bb50](https://github.com/filebrowser/filebrowser/commit/bb4bb508a9d71516e8fa80b3a6285fe002a059d2))
+* **deps:** bump golang.org/x/image from 0.5.0 to 0.10.0 ([#2800](https://github.com/filebrowser/filebrowser/issues/2800)) ([a744bd2](https://github.com/filebrowser/filebrowser/commit/a744bd224f0ff1efc53ab94481fa76ef68788df1))
+* **deps:** bump golang.org/x/net from 0.11.0 to 0.17.0 ([#2758](https://github.com/filebrowser/filebrowser/issues/2758)) ([d574fb6](https://github.com/filebrowser/filebrowser/commit/d574fb6d1af41ec31778b0f402674e5111a7875d))
+* fix deprecated goreleaser config options ([38f7788](https://github.com/filebrowser/filebrowser/commit/38f77882559133b9ff330cfb955a9d4ea4728cf8))
+
+## [2.25.0](https://github.com/filebrowser/filebrowser/compare/v2.24.2...v2.25.0) (2023-09-14)
+
+
+### Features
+
+* add new folder button to move/create dialogs ([#2667](https://github.com/filebrowser/filebrowser/issues/2667)) ([5994224](https://github.com/filebrowser/filebrowser/commit/599422446849fa37d5ab448bbf464afb7304b99d))
+* added shell resizing ([#2648](https://github.com/filebrowser/filebrowser/issues/2648)) ([584b706](https://github.com/filebrowser/filebrowser/commit/584b706b1e310297acc2580c60442ff5c11ae432))
+* implement abort upload functionality ([#2673](https://github.com/filebrowser/filebrowser/issues/2673)) ([a404fb0](https://github.com/filebrowser/filebrowser/commit/a404fb043da2573bf04385863b2d34b1f918b8e1))
+* implement upload speed calculation and ETA estimation ([#2677](https://github.com/filebrowser/filebrowser/issues/2677)) ([ecdd684](https://github.com/filebrowser/filebrowser/commit/ecdd684bf1d537a4591caa38348102b61dd51e5d))
+
+
+### Bug Fixes
+
+* refactor path resolution logic for project root ([#2674](https://github.com/filebrowser/filebrowser/issues/2674)) ([95fec7f](https://github.com/filebrowser/filebrowser/commit/95fec7f69430c108e5cf95c428db9d671cd97a94))
+* tus upload with cloudflare proxy ([36af01d](https://github.com/filebrowser/filebrowser/commit/36af01daa6e04005ce3d18985eebaeef06f7393d)), closes [#2593](https://github.com/filebrowser/filebrowser/issues/2593)
+
+
+### Refactorings
+
+* migrate frontend tooling to vite 4 ([#2645](https://github.com/filebrowser/filebrowser/issues/2645)) ([8838a09](https://github.com/filebrowser/filebrowser/commit/8838a09cf5104deac22b6143050588040c6825e6))
+
+
+### Build
+
+* bump go version to 1.21.0 ([#2672](https://github.com/filebrowser/filebrowser/issues/2672)) ([2c97573](https://github.com/filebrowser/filebrowser/commit/2c97573301a1b13179678fb7f9bd8316539ecdff))
+* bump node version to 18 ([#2671](https://github.com/filebrowser/filebrowser/issues/2671)) ([70eba7e](https://github.com/filebrowser/filebrowser/commit/70eba7ecc9d19545c0899ae40eb3897a7c48562f))
+
+
+### Performance improvements
+
+* **backend:** optimize subtitles detection performance ([#2637](https://github.com/filebrowser/filebrowser/issues/2637)) ([374bbd3](https://github.com/filebrowser/filebrowser/commit/374bbd3ec199fddbe491ab2b74e520a10a73e54b))
+
+### [2.24.2](https://github.com/filebrowser/filebrowser/compare/v2.24.1...v2.24.2) (2023-08-08)
+
+
+### Bug Fixes
+
+* 403 error error when uploading ([#2598](https://github.com/filebrowser/filebrowser/issues/2598)) ([289c8e6](https://github.com/filebrowser/filebrowser/commit/289c8e6f32eb520cc711389f6b6a4ed94a73ecd4))
+* config init for branding.disableUsedPercentage ([#2576](https://github.com/filebrowser/filebrowser/issues/2576)) ([#2596](https://github.com/filebrowser/filebrowser/issues/2596)) ([ff1e0b8](https://github.com/filebrowser/filebrowser/commit/ff1e0b8185faf14b1f8e91830ca5e71e68ab672e))
+
+
+### Build
+
+* add riscv64 binary releases ([#2587](https://github.com/filebrowser/filebrowser/issues/2587)) ([0ac3968](https://github.com/filebrowser/filebrowser/commit/0ac39684f175487314e97403406f4d2c482e3d79))
+
+### [2.24.1](https://github.com/filebrowser/filebrowser/compare/v2.24.0...v2.24.1) (2023-07-31)
+
+
+### Bug Fixes
+
+* add directory creation code to partial upload handler ([#2575](https://github.com/filebrowser/filebrowser/issues/2575)) ([#2580](https://github.com/filebrowser/filebrowser/issues/2580)) ([912f27a](https://github.com/filebrowser/filebrowser/commit/912f27a9e3286ee4bf2a27b366a1d35b3b55799c))
+* resolved CSS rendering issue in Chrome browser ([#2582](https://github.com/filebrowser/filebrowser/issues/2582)) ([2a4a46c](https://github.com/filebrowser/filebrowser/commit/2a4a46c61a5d5376bea65b28d0eb6a7ec2fdf4e5))
+
+
+### Build
+
+* **backend:** upgrade golangci-lint to v1.53.3 ([efd41cc](https://github.com/filebrowser/filebrowser/commit/efd41cc4c147b8d2d5e61fb2642df8d934f49362))
+
+## [2.24.0](https://github.com/filebrowser/filebrowser/compare/v2.23.0...v2.24.0) (2023-07-29)
+
+
+### Features
+
+* add a healthcheck script that works with a dynamic port ([#2510](https://github.com/filebrowser/filebrowser/issues/2510)) ([ff4375c](https://github.com/filebrowser/filebrowser/commit/ff4375cf6ce849459889f892dd91304703c52dcd))
+* add a new setting that disables the display of the disk usage ([#2136](https://github.com/filebrowser/filebrowser/issues/2136)) ([428c1c6](https://github.com/filebrowser/filebrowser/commit/428c1c606d1b858ed0eb58b7c31f570bc6a9b792))
+* add Hungarian translation ([#2232](https://github.com/filebrowser/filebrowser/issues/2232)) ([11e9202](https://github.com/filebrowser/filebrowser/commit/11e92021607e12efff9fb2d5c8728483eee31199))
+* add option to copy download links from shares ([#2442](https://github.com/filebrowser/filebrowser/issues/2442)) ([a4ef02a](https://github.com/filebrowser/filebrowser/commit/a4ef02a47b53742a0ac1f639563b0c67116619c8))
+* integrate tus.io for resumable and chunked uploads ([#2145](https://github.com/filebrowser/filebrowser/issues/2145)) ([7b35815](https://github.com/filebrowser/filebrowser/commit/7b35815754690540f76e3ffe114eedb47cfd5c7e))
+
+
+### Bug Fixes
+
+* added an early return on non-existent items ([#2571](https://github.com/filebrowser/filebrowser/issues/2571)) ([2744f7d](https://github.com/filebrowser/filebrowser/commit/2744f7d5b9106c7c2eec69010e550e0939c23d80))
+* build on FreeBSD and non-Linux platforms ([#2332](https://github.com/filebrowser/filebrowser/issues/2332)) ([60d1e2d](https://github.com/filebrowser/filebrowser/commit/60d1e2d2913cce591fbee97337bd58310480269f))
+* error while using fallback of dir move ([#2349](https://github.com/filebrowser/filebrowser/issues/2349)) ([853ec90](https://github.com/filebrowser/filebrowser/commit/853ec906efbdee9013c5d34ed1d9b8fee88a6b29))
+* filter ANSI color for shell ([#2529](https://github.com/filebrowser/filebrowser/issues/2529)) ([9bcfa90](https://github.com/filebrowser/filebrowser/commit/9bcfa900f904fe683c8d9085947f57932bfe22a0))
+* goreleaser docker build ([051104b](https://github.com/filebrowser/filebrowser/commit/051104bfa061720d4402c612e61bb0fc80a946bf))
+* solve broken Docker build with alpine image ([#2486](https://github.com/filebrowser/filebrowser/issues/2486)) ([b8ee340](https://github.com/filebrowser/filebrowser/commit/b8ee3404ee480ef1fd439543ab6d46f318ff3647))
+* video preview click next or prev button subtitles not update ([#2423](https://github.com/filebrowser/filebrowser/issues/2423)) ([6744cd4](https://github.com/filebrowser/filebrowser/commit/6744cd47cef87e3a76a2190bdf123b6c2197fe6f))
+* xss vulnerability in /api/raw ([#2570](https://github.com/filebrowser/filebrowser/issues/2570)) ([#2572](https://github.com/filebrowser/filebrowser/issues/2572)) ([b508ac3](https://github.com/filebrowser/filebrowser/commit/b508ac3d4f7f0f75d6b49c99bdc661a6d2173f30))
+
+
+### Refactorings
+
+* replace username old focus logic with the autofocus attribute ([#2223](https://github.com/filebrowser/filebrowser/issues/2223)) ([2b2c108](https://github.com/filebrowser/filebrowser/commit/2b2c1085fb50ad68612ad438e527fd316d8aafee))
+
+
+### Build
+
+* **backend:** bump go version to 1.20.1 ([fa95299](https://github.com/filebrowser/filebrowser/commit/fa95299df4aa7e4c54d872e786a91ded5bdb01c1))
+* **backend:** bump go version to 1.20.6 ([9bf6b85](https://github.com/filebrowser/filebrowser/commit/9bf6b856e5411e635ba9102ff53dfe927183848e))
+* **deps-dev:** bump word-wrap from 1.2.3 to 1.2.4 in /frontend ([#2556](https://github.com/filebrowser/filebrowser/issues/2556)) ([bb34862](https://github.com/filebrowser/filebrowser/commit/bb3486286c0da112ad97456ad258ddcdfe17c154))
+* **deps:** bump minimatch from 3.0.4 to 3.1.2 in /tools ([#2561](https://github.com/filebrowser/filebrowser/issues/2561)) ([a664ba1](https://github.com/filebrowser/filebrowser/commit/a664ba1f9df45c7f6d03492c85466c5aa07c740e))
+* **deps:** bump semver from 5.7.1 to 5.7.2 in /tools ([#2546](https://github.com/filebrowser/filebrowser/issues/2546)) ([c2f1423](https://github.com/filebrowser/filebrowser/commit/c2f1423c02e4736f4c243c3164dc671879e065f3))
+* remove armv6-s6 docker target ([66dfbb3](https://github.com/filebrowser/filebrowser/commit/66dfbb303cf792b7b01650d0125d948ab8d81ddd))
+* remove armv7-s6 docker target ([4d77ce0](https://github.com/filebrowser/filebrowser/commit/4d77ce0955644551f891af3e4098c37e9cc37e40))
+
 ## [2.23.0](https://github.com/filebrowser/filebrowser/compare/v2.22.4...v2.23.0) (2022-11-05)
 
 

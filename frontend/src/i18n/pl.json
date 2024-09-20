@@ -1,6 +1,7 @@
 {
   "buttons": {
     "cancel": "Anuluj",
+    "clear": "Wyczyść",
     "close": "Zamknij",
     "copy": "Kopiuj",
     "copyFile": "Kopiuj plik",
@@ -46,7 +47,6 @@
   },
   "files": {
     "body": "Body",
-    "clear": "Wyczyść",
     "closePreview": "Zamknij poprzednie",
     "files": "Pliki",
     "folders": "Foldery",
@@ -75,31 +75,6 @@
     "f1": "ta informacja",
     "f2": "zmień nazwę pliku",
     "help": "Pomoc"
-  },
-  "languages": {
-    "he": "עברית",
-    "hu": "Magyar",
-    "ar": "العربية",
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "is": "Íslenska",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "nlBE": "Nederlands (België)",
-    "pl": "Polski",
-    "pt": "Português",
-    "ptBR": "Português (Brasil)",
-    "ro": "Română",
-    "ru": "Русский",
-    "sk": "Slovenčina",
-    "svSE": "Svenska (Sverige)",
-    "tr" : "Türkçe",
-    "ua": "Українська",
-    "zhCN": "中文 (简体)",
-    "zhTW": "中文 (繁體)"
   },
   "login": {
     "createAnAccount": "Utwórz konto",
@@ -147,7 +122,6 @@
     "size": "Rozmiar",
     "upload": "Prześlij",
     "uploadMessage": "Proszę wybrać metodę przesyłania"
-
   },
   "search": {
     "images": "Zdjęcia",
@@ -179,6 +153,7 @@
     "customStylesheet": "Własny arkusz stylów",
     "defaultUserDescription": "Oto domyślne ustawienia dla nowych użytkowników.",
     "disableExternalLinks": "Wyłącz linki zewnętrzne (z wyjątkiem dokumentacji)",
+    "disableUsedDiskPercentage": "Disable used disk percentage graph",
     "documentation": "dokumentacja",
     "examples": "Przykłady",
     "executeOnShell": "Wykonaj w powłoce",
@@ -258,4 +233,3 @@
     "unit": "Jednostka czasu"
   }
 }
-

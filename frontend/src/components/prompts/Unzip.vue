@@ -1,80 +1,151 @@
 <template>
-    <div class="card floating">
-      <div class="card-title">
-        <h2>{{ $t("prompts.unzip") }}</h2>
-      </div>
-  
-      <div class="card-content">
-        <file-list @update:selected="(val) => (dest = val)"></file-list>
-      </div>
-  
-      <div class="card-action">
+  <div class="card floating">
+    <div class="card-title">
+      <h2>{{ $t("prompts.unzip") }}</h2>
+    </div>
+
+    <div class="card-content">
+      <p>{{ $t("prompts.unzipMessage") }}</p>
+      <file-list
+          ref="fileList"
+          @update:selected="(val) => (dest = val)"
+          tabindex="1"
+      />
+    </div>
+
+    <div
+        class="card-action"
+        style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <template v-if="user.perm.unzip">
         <button
-          class="button button--flat button--grey"
-          @click="$store.commit('closeHovers')"
-          :aria-label="$t('buttons.cancel')"
-          :title="$t('buttons.cancel')"
+            class="button button--flat"
+            @click="$refs.fileList.createDir()"
+            :aria-label="$t('sidebar.newFolder')"
+            :title="$t('sidebar.newFolder')"
+            style="justify-self: left"
+        >
+          <span>{{ $t("sidebar.newFolder") }}</span>
+        </button>
+      </template>
+      <div>
+        <button
+            class="button button--flat button--grey"
+            @click="closeHovers"
+            :aria-label="$t('buttons.cancel')"
+            :title="$t('buttons.cancel')"
+            tabindex="3"
         >
           {{ $t("buttons.cancel") }}
         </button>
         <button
-          class="button button--flat"
-          @click="unzip"
-          :disabled="$route.path === dest"
-          :aria-label="$t('buttons.unzip')"
-          :title="$t('buttons.unzip')"
+            id="focus-prompt"
+            class="button button--flat"
+            @click="unzip"
+            :aria-label="$t('buttons.unzip')"
+            :title="$t('buttons.unzip')"
+            tabindex="2"
         >
           {{ $t("buttons.unzip") }}
         </button>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { mapState } from "vuex";
-  import FileList from "./FileList";
-  import { files as api } from "@/api";
-  import buttons from "@/utils/buttons";
-  
-  export default {
-    name: "unzip",
-    components: { FileList },
-    data: function () {
-      return {
-        current: window.location.pathname,
-        dest: null,
-      };
-    },
-    computed: mapState(["req", "selected"]),
-    methods: {
-      unzip: async function (event) {
-        event.preventDefault();
-        let items = [];
-  
-        for (let item of this.selected) {
-          items.push({
-            from: this.req.items[item].url,
-            to: this.dest,
-            name: this.req.items[item].name,
-          });
-        }
-  
-        let action = async () => {
-          buttons.loading("unzip");
-  
-          await api
-            .unzip(items)
+  </div>
+</template>
+
+<script>
+import { mapActions, mapState, mapWritableState } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+import { useAuthStore } from "@/stores/auth";
+import FileList from "./FileList.vue";
+import { files as api } from "@/api";
+import buttons from "@/utils/buttons";
+import * as upload from "@/utils/upload";
+
+export default {
+  name: "unzip",
+  components: { FileList },
+  data: function () {
+    return {
+      current: window.location.pathname,
+      dest: null,
+    };
+  },
+  inject: ["$showError"],
+  computed: {
+    ...mapState(useFileStore, ["req", "selected"]),
+    ...mapState(useAuthStore, ["user"]),
+    ...mapWritableState(useFileStore, ["reload"]),
+  },
+  methods: {
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
+    unzip: async function (event) {
+      event.preventDefault();
+      let items = [];
+
+      // Create a new promise for each file.
+      for (let item of this.selected) {
+        items.push({
+          from: this.req.items[item].url,
+          to: this.dest + encodeURIComponent(this.req.items[item].name),
+          name: this.req.items[item].name,
+        });
+      }
+
+      let action = async (overwrite, rename) => {
+        buttons.loading("unzip");
+        console.log("ecchime")
+        await api
+            .unzip(items, overwrite, rename)
             .then(() => {
               buttons.success("unzip");
+
+              if (this.$route.path === this.dest) {
+                this.reload = true;
+
+                return;
+              }
+
               this.$router.push({ path: this.dest });
             })
             .catch((e) => {
               buttons.done("unzip");
               this.$showError(e);
             });
-        };
-        action();
-      },
+      };
+
+      if (this.$route.path === this.dest) {
+        this.closeHovers();
+        action(false, true);
+
+        return;
+      }
+
+      let dstItems = (await api.fetch(this.dest)).items;
+      let conflict = upload.checkConflict(items, dstItems);
+
+      let overwrite = false;
+      let rename = false;
+
+      if (conflict) {
+        this.showHover({
+          prompt: "replace-rename",
+          confirm: (event, option) => {
+            overwrite = option == "overwrite";
+            rename = option == "rename";
+
+            event.preventDefault();
+            this.closeHovers();
+            action(overwrite, rename);
+          },
+        });
+
+        return;
+      }
+
+      action(overwrite, rename);
     },
-  };
-  </script>
+  },
+};
+</script>

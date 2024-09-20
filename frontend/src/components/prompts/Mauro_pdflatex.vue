@@ -1,85 +1,135 @@
 <template>
-    <div class="card floating">
-      <div class="card-title">
-        <h2>{{ $t("prompts.mauro_pdflatex") }}</h2>
-      </div>
-  
-      <div class="card-content">
-        Execute pdflatex on the file ?
-        <div style="padding-top: 15px;">
-          <input style="margin: 5px;" type="checkbox" id="checkbox" ref="theCheckbox" checked="true">
-          <label for="checkbox">load result</label>
-        </div>
-      </div>
-  
-      <div class="card-action">
+  <div class="card floating">
+    <div class="card-title">
+      <h2>{{ $t("prompts.mauro_pdflatex") }}</h2>
+    </div>
+
+    <div class="card-content">
+      <file-list
+        ref="fileList"
+        @update:selected="(val) => (dest = val)"
+        tabindex="1"
+      />
+    </div>
+
+    <div
+      class="card-action"
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <template v-if="user.perm.create">
+        <button
+          class="button button--flat"
+          @click="$refs.fileList.createDir()"
+          :aria-label="$t('sidebar.newFolder')"
+          :title="$t('sidebar.newFolder')"
+          style="justify-self: left"
+        >
+          <span>{{ $t("sidebar.newFolder") }}</span>
+        </button>
+      </template>
+      <div>
         <button
           class="button button--flat button--grey"
-          @click="$store.commit('closeHovers')"
+          @click="closeHovers"
           :aria-label="$t('buttons.cancel')"
           :title="$t('buttons.cancel')"
+          tabindex="3"
         >
           {{ $t("buttons.cancel") }}
         </button>
         <button
+          id="focus-prompt"
           class="button button--flat"
-          @click="mauro_pdflatex"
-          :aria-label="$t('buttons.mauro_pdflatex')"
-          :title="$t('buttons.mauro_pdflatex')"
+          @click="mauro"
+          :disabled="false"
+          :aria-label="$t('buttons.mauro')"
+          :title="$t('buttons.mauro')"
+          tabindex="2"
         >
           {{ $t("buttons.mauro_pdflatex") }}
         </button>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { mapState } from "vuex";
-  // import FileList from "./FileList";
-  import { files as api } from "@/api";
-  import buttons from "@/utils/buttons";
-  
-  export default {
-    name: "mauro_pdflatex",
-    // components: { FileList },
-    data: function () {
-      return {
-        current: window.location.pathname,
-        dest: null,
-      };
-    },
-    computed: mapState(["req", "selected"]),
-    methods: {
-      mauro_pdflatex: async function (event) {
-        event.preventDefault();
-        let items = [];
-  
-        for (let item of this.selected) {
-          items.push({
-            from: this.req.items[item].url
+  </div>
+</template>
+
+<script>
+import { mapActions, mapState } from "pinia";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+import { useAuthStore } from "@/stores/auth";
+import FileList from "./FileList.vue";
+import { files as api } from "@/api";
+import buttons from "@/utils/buttons";
+import * as upload from "@/utils/upload";
+
+export default {
+  name: "mauro_pdflatex",
+  components: { FileList },
+  data: function () {
+    return {
+      current: window.location.pathname,
+      dest: null,
+    };
+  },
+  inject: ["$showError"],
+  computed: {
+    ...mapState(useFileStore, ["req", "selected"]),
+    ...mapState(useAuthStore, ["user"]),
+  },
+  methods: {
+    ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
+    mauro_pdflatex: async function (event) {
+      event.preventDefault();
+      let items = [];
+
+      for (let item of this.selected) {
+        items.push({
+          from: this.req.items[item].url,
+          to: this.dest + encodeURIComponent(this.req.items[item].name),
+          name: this.req.items[item].name,
+        });
+      }
+
+      let action = async (overwrite, rename) => {
+        buttons.loading("mauro");
+
+        await api
+          .mauro("mauro_pdflatex", items, overwrite, rename)
+          .then(() => {
+            buttons.success("mauro");
+            this.$router.push({ path: this.dest });
+          })
+          .catch((e) => {
+            buttons.done("mauro");
+            this.$showError(e);
           });
-        }
-        let action = async () => {
-          const load_result = this.$refs.theCheckbox.checked;
-          buttons.loading("mauro_pdflatex");
+      };
 
-          await api
-            .mauro("pdflatex",items)
-            .then(() => {
-              buttons.success("mauro_pdflatex");
+      let dstItems = (await api.fetch(this.dest)).items;
+      let conflict = upload.checkConflict(items, dstItems);
 
-              if(load_result)
-                this.$router.push({ path: items[0].from + ".pdflatex.OUT.log" }); //convenzione
-              else
-                this.$router.push({ path: "#" + Math.random() });
-            })
-            .catch((e) => {
-              buttons.done("mauro_pdflatex");
-              this.$showError(e);
-            });
-        };
-        action();
-      },
+      let overwrite = false;
+      let rename = false;
+
+      if (conflict) {
+        this.showHover({
+          prompt: "replace-rename",
+          confirm: (event, option) => {
+            overwrite = option == "overwrite";
+            rename = option == "rename";
+
+            event.preventDefault();
+            this.closeHovers();
+            action(overwrite, rename);
+          },
+        });
+
+        return;
+      }
+
+      action(overwrite, rename);
     },
-  };
-  </script>
+  },
+};
+</script>
