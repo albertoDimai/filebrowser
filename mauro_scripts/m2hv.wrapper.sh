@@ -2,7 +2,7 @@
 
 ##paths are assumed ABSOLUTE
 
-#DRYRUN="echo"
+DRYRUN="echo"
 
 
 infile="${1}"
@@ -37,7 +37,7 @@ echo pwd: $(pwd)
 
     rm -f "$infile_name"
 
-    ln -s "$generated_index" index.html
+    ln -sf "$generated_index" index.html
     
 ) > "$outdir/$outfile" 2>&1
 
