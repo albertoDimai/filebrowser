@@ -2,7 +2,7 @@
 
 ##paths are assumed ABSOLUTE
 
-DRYRUN="echo"
+#DRYRUN="echo"
 
 
 infile="${1}"
