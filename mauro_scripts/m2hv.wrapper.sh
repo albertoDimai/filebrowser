@@ -20,7 +20,7 @@ echo outfile $outfile
 echo outdir $outdir
 
 
-mkdir "$outdir"
+mkdir -p "$outdir"
 echo pwd: $(pwd)
 
 (
