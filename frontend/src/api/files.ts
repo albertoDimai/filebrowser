@@ -170,7 +170,7 @@ async function postResources(
 
 
 export function mauro(command: string, item : any, commandline:string ,owerwrite : boolean, rename: boolean) {
-  console.log("mauro fn", item)
+  //console.log("mauro fn", item)
   // return moveCopy(items, false, false,false, false, true);
   const promises = [];
   const from = item.from;
