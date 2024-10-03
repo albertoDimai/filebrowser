@@ -12,7 +12,8 @@ outdir="${2}"
 
 COMMANDLINE="${3}"
 
-generated_index=$(basename "$infile_name" .tex)-ind.htm
+#generated_index=$(basename "$infile_name" .tex)-ind.htm
+generated_index=$(basename "$infile_name" .tex)-1f.htm
 
 echo infile $infile
 echo infile_name $infile_name
