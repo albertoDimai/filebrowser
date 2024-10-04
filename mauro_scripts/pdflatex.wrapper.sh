@@ -1,5 +1,9 @@
 #!/bin/bash
-outfile=${1}.pdflatex.OUT.log
+
+infile="${1}"
+infile_name=$(basename "$infile")
+outfile="${infile_name}.OUT.log"
+
 (
-    pdflatex ${i}
+    pdflatex "${infile}"
 ) 2>&1 > $outfile

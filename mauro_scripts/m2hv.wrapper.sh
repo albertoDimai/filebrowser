@@ -33,7 +33,7 @@ echo pwd: $(pwd)
     echo "EXECUTING: " m2hv "$COMMANDLINE" "./$infile_name"
     echo "----"
     
-    ${DRYRUN} m2hv "$COMMANDLINE" "./$infile_name"
+    ${DRYRUN} m2hv $COMMANDLINE "./$infile_name"
 
     rm -f "$infile_name"
 
