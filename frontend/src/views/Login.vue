@@ -1,8 +1,40 @@
 <template>
   <div id="login" :class="{ recaptcha: recaptcha }">
+
+    <div style="max-width: 70em; margin:auto; font-size: 120%;">
+      <h1 style="text-align: center;"><i>Mauro</i>-<tt>T<sub>E</sub>X</tt></h1>
+      <h3 style="text-align: center;">
+        Piattaforma online per l'allestimento e la gestione <br/>
+        di un'edizione critica
+      </h3>
+      <div>
+        Sviluppato nell'ambito dell'Edizione Nazionale dell'Opera matematica di Francesco Maurolico
+        (<a href="http://www.maurolico.it" target="__BLANK">www.maurolico.it</a>), il
+        <i>Mauro</i>-<tt>T<sub>E</sub>X</tt>
+        è un linguaggio e un insieme di applicazioni che permettono di
+        <ul>
+          <li>
+            fornire il testo critico di un'opera che tenga conto di tutta la tradizione manoscritta ed a stampa e
+            che rispetti determinati standard di qualità e di eleganza filologica; </li>
+          <li>
+            registrare, attraverso l'utilizzo di un opportuno sistema di descrizione, un elevato numero di informazioni
+            filologiche relative al testo, in modo da permettere, in particolare, il recupero integrale dei diversi
+            testimoni sui quali è stato costruito il testo critico; </li>
+          <li>
+            uniformare, nell'ambito di un gruppo di collaboratori numeroso, la presentazione ed i criteri editoriali.
+          </li>
+        </ul>
+      </div>
+         <div style="text-align: center; position: absolute; bottom: 15px; left: 0; right: 0; font-size: 12px;">
+      	      per richiedere un account per l'accesso scrivere a
+               <a target="__BLANK" href="mailto:alberto.mancini@unifi.it">alberto.mancini@unifi.it</a>
+         </div>
+         <div	style="font-size: 8px; text-align: right; position: absolute; bottom: 1px; left: 0; right: 10px; color: blue;">version 4.0410</div>
+    </div>
+    
     <form @submit="submit">
-      <img :src="logoURL" alt="File Browser" />
-      <h1>{{ name }}</h1>
+      <!-- <img :src="logoURL" alt="File Browser" /> -->
+      <!-- <h1>{{ name }}</h1> -->
       <div v-if="error !== ''" class="wrong">{{ error }}</div>
 
       <input
