@@ -4,7 +4,7 @@
       <h2>{{ $t("prompts.mauro_pdflatex") }}</h2>
     </div>
 
-    <div class="card-content">
+    <div class="card-content" >
       <file-list
         ref="fileList"
         @update:selected="(val) => (dest = val)"
@@ -17,7 +17,7 @@
       style="display: flex; align-items: center; justify-content: space-between"
     >
       <template v-if="user.perm.create">
-        <button
+        <button v-if="false"
           class="button button--flat"
           @click="$refs.fileList.createDir()"
           :aria-label="$t('sidebar.newFolder')"
@@ -40,10 +40,10 @@
         <button
           id="focus-prompt"
           class="button button--flat"
-          @click="mauro"
+          @click="mauro_pdflatex"
           :disabled="false"
-          :aria-label="$t('buttons.mauro')"
-          :title="$t('buttons.mauro')"
+          :aria-label="$t('buttons.mauro_pdflatex')"
+          :title="$t('buttons.mauro_pdflatex')"
           tabindex="2"
         >
           {{ $t("buttons.mauro_pdflatex") }}
@@ -83,31 +83,31 @@ export default {
       event.preventDefault();
       let items = [];
 
-      for (let item of this.selected) {
-        items.push({
-          from: this.req.items[item].url,
-          to: this.dest + encodeURIComponent(this.req.items[item].name),
-          name: this.req.items[item].name,
-        });
+      const item = {
+        from: this.req.items[this.selected[0]].url,
+        //to: this.current +"/"+ this.outputName,
+        //name: this.outputName,
       }
 
       let action = async (overwrite, rename) => {
-        buttons.loading("mauro");
+        buttons.loading("mauro_pdflatex");
 
         await api
-          .mauro("mauro_pdflatex", items, overwrite, rename)
+          .mauro("pdflatex", item,"", overwrite, rename)
           .then(() => {
-            buttons.success("mauro");
+            buttons.success("mauro_pdflatex");
             this.$router.push({ path: this.dest });
           })
           .catch((e) => {
-            buttons.done("mauro");
+            buttons.done("mauro_pdflatex");
             this.$showError(e);
           });
       };
 
-      let dstItems = (await api.fetch(this.dest)).items;
-      let conflict = upload.checkConflict(items, dstItems);
+      //let dstItems = (await api.fetch(this.dest)).items;
+      //let conflict = upload.checkConflict(items, dstItems);
+
+      let conflict = false;
 
       let overwrite = false;
       let rename = false;

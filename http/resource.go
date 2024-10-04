@@ -189,20 +189,22 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		action := r.URL.Query().Get("action")
 		dst, err := url.QueryUnescape(dst)
 
-
 		if !d.Check(src) || !d.Check(dst) {
 			return http.StatusForbidden, nil
 		}
 		if err != nil {
 			return errToStatus(err), err
 		}
-		if (dst == "/" || src == "/") && action != "unzip" {
+
+		//TODO maybe we need a more generic control here ?
+		if (dst == "/" || src == "/") && action != "unzip" && action != "mauro:pdflatex" {
 			return http.StatusForbidden, nil
 		}
 
 		fmt.Printf("resourcePatchHandler, %s, %s, %s\n", src, action,dst)
 
 		if action != "mauro" && !strings.HasPrefix(action, "mauro:") { //any command starting with mauro is handled differently
+
 			err = checkParent(src, dst)
 			if err != nil {
 				return http.StatusBadRequest, err
@@ -374,8 +376,20 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 		if false /*|| !d.user.Perm.Mauro*/ {
 			return fbErrors.ErrPermissionDenied
 		}
+
 		src = d.user.FullPath(src)
-		cmd := exec.Command("m2ledmac.wrapper.sh", src) //nolint:gosec
+
+		dst = d.user.FullPath(dst)
+		comamndline_arguments := request.URL.Query().Get("commandline");
+		comamndline, err := url.QueryUnescape(comamndline_arguments);
+
+		if err != nil {
+			return fmt.Errorf("error parsing options %s: %w", comamndline_arguments, fbErrors.ErrInvalidRequestParams)
+		}
+
+		println("executing: " + "m2ledmac.wrapper.sh " + src  + " " + dst + " " +  comamndline )
+
+		cmd := exec.Command("m2ledmac.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)

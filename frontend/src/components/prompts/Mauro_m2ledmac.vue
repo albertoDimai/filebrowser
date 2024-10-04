@@ -1,5 +1,5 @@
 <template>
-  <div class="card floating">
+  <div class="card floating" style="max-width: 40em;">
     <div class="card-title">
       <h2>{{ $t("prompts.mauro_m2ledmac") }}</h2>
     </div>
@@ -7,27 +7,62 @@
     <div class="card-content">
       <file-list
         ref="fileList"
-        @update:selected="(val) => (dest = val)"
+        @update:selected="(val) => {eventuallyChangedDestination();}"
         tabindex="1"
       />
+
+      <hr style="margin-bottom: 1.5em;"/>
+
+      <div style="display: inline-block; width: calc( 100% - 90px);">
+      <label>Destination Directory Name:
+        <input style="margin-bottom: 1em;"
+        class="input input--block"
+        type="text"
+        v-on:keyup="eventuallyChangedDestination"
+        v-model.trim="outputName"/>
+      </label>
+      </div>
+
+    <div ref="hideable" style="display: inline-block; margin-left: 10px; vertical-align: top; transition: opacity .6s;">
+    <label>Overwrite:
+      <input style="margin-bottom: 1em; margin-top: 10px;"
+             class="input input--block"
+             type="checkbox"
+             ref="overwrite"
+             @click="eventuallyChangedDestination"
+             v-model.trim="overwrite"/>
+    </label>
+  </div>
+
+
+
+      <label>m2ledmac options:
+        <input
+            class="input input--block"
+            type="text"
+            v-model.trim="commandline"
+        />
+      </label>
+
+
     </div>
 
     <div
       class="card-action"
       style="display: flex; align-items: center; justify-content: space-between"
     >
-      <template v-if="user.perm.create">
-        <button
-          class="button button--flat"
-          @click="$refs.fileList.createDir()"
-          :aria-label="$t('sidebar.newFolder')"
-          :title="$t('sidebar.newFolder')"
-          style="justify-self: left"
-        >
-          <span>{{ $t("sidebar.newFolder") }}</span>
-        </button>
-      </template>
-      <div>
+<!--      <template v-if="user.perm.create">-->
+<!--        <button-->
+<!--          class="button button&#45;&#45;flat"-->
+<!--          @click="$refs.fileList.createDir()"-->
+<!--          :aria-label="$t('sidebar.newFolder')"-->
+<!--          :title="$t('sidebar.newFolder')"-->
+<!--          style="justify-self: left"-->
+<!--        >-->
+<!--          <span>{{ $t("sidebar.newFolder") }}</span>-->
+<!--        </button>-->
+<!--      </template>-->
+      <div style="width: 100%;">
         <button
           class="button button--flat button--grey"
           @click="closeHovers"
@@ -40,10 +75,10 @@
         <button
           id="focus-prompt"
           class="button button--flat"
-          @click="mauro"
-          :disabled="false"
-          :aria-label="$t('buttons.mauro')"
-          :title="$t('buttons.mauro')"
+          @click="mauro_m2ledmac"
+          :disabled="isSaveDisabled"
+          :aria-label="$t('buttons.mauro_m2ledmac')"
+          :title="$t('buttons.mauro_m2ledmac')"
           tabindex="2"
         >
           {{ $t("buttons.mauro_m2ledmac") }}
@@ -68,67 +103,107 @@ export default {
   components: { FileList },
   data: function () {
     return {
+      fileList: null,
+      outputName: "",
+      commandline: "",
       current: window.location.pathname,
       dest: null,
+      mounted: false,
+      saveDisabled: true,
+      overwrite: false,
+      hideable: null
     };
   },
   inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, ["req", "selected"]),
     ...mapState(useAuthStore, ["user"]),
+    isSaveDisabled: function() {
+      return this.saveDisabled;
+    }
+  },
+  created() {
+    this.outputName = this.computeOutputName();
+  },
+  mounted() {
+      //this waits for subcompenents being mounted and starts the show
+    this.mounted = true;
+    this.eventuallyChangedDestination();
+
   },
   methods: {
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-    mauro_m2hv: async function (event) {
-      event.preventDefault();
-      let items = [];
+    eventuallyChangedDestination: function() {
 
-      for (let item of this.selected) {
-        items.push({
-          from: this.req.items[item].url,
-          to: this.dest + encodeURIComponent(this.req.items[item].name),
-          name: this.req.items[item].name,
-        });
+        if(!this.mounted) {
+          //console.log("Mauro_m2ledmac still not mounted");
+          return;
+        }
+
+      let conflicting = false;
+        //check for conflicts
+        for( let dir of this.$refs.fileList.items) {
+          if(this.outputName == dir.name) {
+              conflicting = true;
+              break;
+          }
+        }
+
+        //console.log(this.$refs.overwrite.checked)
+        //console.log("on",this.$refs.fileList.current , this.$refs.fileList.items);
+
+      if(conflicting) {
+        this.$refs.hideable.style.opacity = '1.0';
+        if (!this.$refs.overwrite.checked)
+          this.saveDisabled = true;
+        else
+          this.saveDisabled = false;
+
+      } else {
+        this.$refs.hideable.style.opacity = '0.0';
+        this.saveDisabled = false;
       }
+    },
 
-      let action = async (overwrite, rename) => {
-        buttons.loading("mauro");
+    computeOutputName: function () {
 
-        await api
-          .mauro("mauro_m2hv", items, overwrite, rename)
-          .then(() => {
-            buttons.success("mauro");
-            this.$router.push({ path: this.dest });
-          })
-          .catch((e) => {
-            buttons.done("mauro");
-            this.$showError(e);
-          });
-      };
-
-      let dstItems = (await api.fetch(this.dest)).items;
-      let conflict = upload.checkConflict(items, dstItems);
-
-      let overwrite = false;
-      let rename = false;
-
-      if (conflict) {
-        this.showHover({
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
-
-            event.preventDefault();
-            this.closeHovers();
-            action(overwrite, rename);
-          },
-        });
-
+      if (this.selectedCount === 0 || this.selectedCount > 1) {
+        // This shouldn't happen.
         return;
       }
 
-      action(overwrite, rename);
+      const selected = this.req.items[this.selected[0]].name
+      //rimuoviamo l'extension ed aggiungiamo "_m2ledmac"
+      return selected.substring(0, selected.lastIndexOf('.')) + "_m2ledmac";
+    },
+    mauro_m2ledmac: async function (event) {
+
+      event.preventDefault();
+
+      let action = async (overwrite, rename) => {
+        buttons.loading("mauro_m2ledmac");
+
+        const item = {
+          from: this.req.items[this.selected[0]].url,
+          to: this.current +"/"+ this.outputName,
+          name: this.outputName,
+        }
+
+        await api
+            .mauro("m2ledmac",item, encodeURIComponent(this.commandline), overwrite, rename)
+            .then(() => {
+              const redirect_destination = this.outputName + "/m2ledmac.OUT.log";
+              buttons.success("mauro_m2ledmac");
+              this.$router.push({path: redirect_destination}); //convenzione
+            })
+            .catch((e) => {
+              buttons.done("mauro_m2ledmac");
+              this.$showError(e);
+            });
+      };
+
+      action(false, false);
+
     },
   },
 };
