@@ -373,7 +373,16 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 			return fbErrors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
-		cmd := exec.Command("m2ledmac.wrapper.sh", src) //nolint:gosec
+		dst = d.user.FullPath(dst)
+		comamndline_arguments := request.URL.Query().Get("commandline");
+		comamndline, err := url.QueryUnescape(comamndline_arguments);
+		if err != nil {
+			return fmt.Errorf("error parsing options %s: %w", comamndline_arguments, fbErrors.ErrInvalidRequestParams)
+		}
+		//
+		println("executing: " + "m2ledmac.wrapper.sh " + src  + " " + dst + " " +  comamndline )
+
+		cmd := exec.Command("m2ledmac.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
