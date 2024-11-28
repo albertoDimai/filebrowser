@@ -185,7 +185,7 @@ export default {
 
         const item = {
           from: this.req.items[this.selected[0]].url,
-          to: this.current +"/"+ this.outputName,
+          to: this.$refs.fileList.current + this.outputName,
           name: this.outputName,
         }
 
@@ -193,7 +193,7 @@ export default {
             .mauro("m2hv",item, encodeURIComponent(this.commandline), overwrite, rename)
             .then(() => {
               buttons.success("mauro_m2hv");
-              this.$router.push({path: this.current +"/"+ this.outputName + "/m2hv.OUT.log"}); //convenzione
+              this.$router.push({path: item.to + "/m2hv.OUT.log"}); //convenzione
             })
             .catch((e) => {
               buttons.done("mauro_m2hv");
