@@ -184,6 +184,7 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 
 func resourcePatchHandler(fileCache FileCache) handleFunc {
 	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+
 		src := r.URL.Path
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
@@ -194,7 +195,8 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		if err != nil {
 			return errToStatus(err), err
 		}
-		if (dst == "/" || src == "/") && action != "unzip" {
+
+		if (dst == "/" || src == "/") && action != "unzip" && action != "mauro:pdflatex" {
 			return http.StatusForbidden, nil
 		}
 
@@ -347,7 +349,11 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 			return fbErrors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
-		cmd := exec.Command("pdflatex.wrapper.sh", src) //nolint:gosec
+		dst = d.user.FullPath(dst)
+
+		println("executing: " + "pdflatex.wrapper.sh " + src  + " " + dst  )
+
+		cmd := exec.Command("pdflatex.wrapper.sh", src, dst) //nolint:gosec
 		return cmd.Start()
 
 	case "mauro:m2hv":

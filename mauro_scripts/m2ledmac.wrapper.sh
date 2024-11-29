@@ -11,12 +11,11 @@ outfile=m2ledmac.OUT.log
 outdir="${2}"
 
 COMMANDLINE="${3}"
-(
+
 echo infile $infile
 echo infile_name $infile_name
 echo outfile $outfile
 echo outdir $outdir
-) > /tmp/llo
 
 mkdir -p "$outdir"
 echo pwd: $(pwd)

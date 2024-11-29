@@ -1,5 +1,34 @@
 #!/bin/bash
-outfile=${1}.pdflatex.OUT.log
+
+##paths are assumed ABSOLUTE
+
+#DRYRUN="echo"
+
+
+infile="${1}"
+infile_name=$(basename "$infile")
+outfile=pdflatex.OUT.log
+outdir="${2}"
+
+##ASSUMIAMO (e non funzona altrimenti) che outdir e la path del file siano la medesima !!
+
+COMMANDLINE="${3}"
+
+echo infile $infile
+echo infile_name $infile_name
+echo outfile $outfile
+echo outdir $outdir
+
+
+echo pwd: $(pwd)
+
 (
-    pdflatex ${i}
-) 2>&1 > $outfile
+    cd "$outdir"
+    echo "EXECUTING: " pdflatex "$COMMANDLINE" "./$infile_name"
+    echo "----"
+    
+    ${DRYRUN} pdflatex $COMMANDLINE "./$infile_name"
+
+) > "$outdir/$outfile" 2>&1
+
+echo "end"
