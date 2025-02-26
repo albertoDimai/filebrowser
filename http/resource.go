@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os/exec"
 
 	//"log"
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -184,11 +184,11 @@ var resourcePutHandler = withUser(func(w http.ResponseWriter, r *http.Request, d
 
 func resourcePatchHandler(fileCache FileCache) handleFunc {
 	return withUser(func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+
 		src := r.URL.Path
 		dst := r.URL.Query().Get("destination")
 		action := r.URL.Query().Get("action")
 		dst, err := url.QueryUnescape(dst)
-
 		if !d.Check(src) || !d.Check(dst) {
 			return http.StatusForbidden, nil
 		}
@@ -196,7 +196,6 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
-		//TODO maybe we need a more generic control here ?
 		if (dst == "/" || src == "/") && action != "unzip" && action != "mauro:pdflatex" {
 			return http.StatusForbidden, nil
 		}
@@ -204,7 +203,6 @@ func resourcePatchHandler(fileCache FileCache) handleFunc {
 		fmt.Printf("resourcePatchHandler, %s, %s, %s\n", src, action,dst)
 
 		if action != "mauro" && !strings.HasPrefix(action, "mauro:") { //any command starting with mauro is handled differently
-
 			err = checkParent(src, dst)
 			if err != nil {
 				return http.StatusBadRequest, err
@@ -351,7 +349,11 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 			return fbErrors.ErrPermissionDenied
 		}
 		src = d.user.FullPath(src)
-		cmd := exec.Command("pdflatex.wrapper.sh", src) //nolint:gosec
+		dst = d.user.FullPath(dst)
+
+		println("executing: " + "pdflatex.wrapper.sh " + src  + " " + dst  )
+
+		cmd := exec.Command("pdflatex.wrapper.sh", src, dst) //nolint:gosec
 		return cmd.Start()
 
 	case "mauro:m2hv":
@@ -372,21 +374,36 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 
 		cmd := exec.Command("m2hv.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
-	case "mauro:m2ledmac":
+	case "mauro:m2lv":
 		if false /*|| !d.user.Perm.Mauro*/ {
 			return fbErrors.ErrPermissionDenied
 		}
 
 		src = d.user.FullPath(src)
-
 		dst = d.user.FullPath(dst)
+
 		comamndline_arguments := request.URL.Query().Get("commandline");
 		comamndline, err := url.QueryUnescape(comamndline_arguments);
-
 		if err != nil {
 			return fmt.Errorf("error parsing options %s: %w", comamndline_arguments, fbErrors.ErrInvalidRequestParams)
 		}
+		//
+		println("executing: " + "m2lv.wrapper.sh " + src  + " " + dst + " " +  comamndline )
 
+		cmd := exec.Command("m2lv.wrapper.sh", src, dst, comamndline) //nolint:gosec
+		return cmd.Run()
+	case "mauro:m2ledmac":
+		if false /*|| !d.user.Perm.Mauro*/ {
+			return fbErrors.ErrPermissionDenied
+		}
+		src = d.user.FullPath(src)
+		dst = d.user.FullPath(dst)
+		comamndline_arguments := request.URL.Query().Get("commandline");
+		comamndline, err := url.QueryUnescape(comamndline_arguments);
+		if err != nil {
+			return fmt.Errorf("error parsing options %s: %w", comamndline_arguments, fbErrors.ErrInvalidRequestParams)
+		}
+		//
 		println("executing: " + "m2ledmac.wrapper.sh " + src  + " " + dst + " " +  comamndline )
 
 		cmd := exec.Command("m2ledmac.wrapper.sh", src, dst, comamndline) //nolint:gosec

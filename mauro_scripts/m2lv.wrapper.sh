@@ -7,10 +7,8 @@
 
 infile="${1}"
 infile_name=$(basename "$infile")
-outfile=pdflatex.OUT.log
+outfile=m2lv.OUT.log
 outdir="${2}"
-
-##ASSUMIAMO (e non funzona altrimenti) che outdir e la path del file siano la medesima !!
 
 COMMANDLINE="${3}"
 
@@ -19,15 +17,21 @@ echo infile_name $infile_name
 echo outfile $outfile
 echo outdir $outdir
 
-
+mkdir -p "$outdir"
 echo pwd: $(pwd)
 
 (
     cd "$outdir"
-    echo "EXECUTING: " pdflatex "$COMMANDLINE" "./$infile_name"
+    #m2lv e' cattivo e usa il path del fiel per costruire la ri di output
+    #quindi noi ce lo copiamo
+    cp "$infile" "$infile_name"
+    
+    echo "EXECUTING: " m2lv "$COMMANDLINE" "./$infile_name"
     echo "----"
+    
+    ${DRYRUN} m2lv $COMMANDLINE "./$infile_name"
 
-    ${DRYRUN} pdflatex $COMMANDLINE "./$infile_name"
+    rm -f "$infile_name"
 
 ) > "$outdir/$outfile" 2>&1
 

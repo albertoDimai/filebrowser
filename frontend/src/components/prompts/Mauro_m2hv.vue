@@ -136,7 +136,7 @@ export default {
     eventuallyChangedDestination: function() {
 
         if(!this.mounted) {
-          //console.log("Mauro_m2hv still not mounted");
+          console.log("Mauro_m2hv still not mounted");
           return;
         }
 
@@ -185,23 +185,21 @@ export default {
 
         const item = {
           from: this.req.items[this.selected[0]].url,
-          to: this.current +"/"+ this.outputName,
+          to: this.$refs.fileList.current + this.outputName,
           name: this.outputName,
         }
 
         await api
             .mauro("m2hv",item, encodeURIComponent(this.commandline), overwrite, rename)
             .then(() => {
-              const redirect_destination = this.outputName + "/m2hv.OUT.log";
               buttons.success("mauro_m2hv");
-              this.$router.push({path: redirect_destination}); //convenzione
+              this.$router.push({path: item.to + "/m2hv.OUT.log"}); //convenzione
             })
             .catch((e) => {
               buttons.done("mauro_m2hv");
               this.$showError(e);
             });
       };
-
       action(false, false);
     },
   },

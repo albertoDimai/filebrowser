@@ -1,7 +1,7 @@
 <template>
   <div class="card floating" style="max-width: 40em;">
     <div class="card-title">
-      <h2>{{ $t("prompts.mauro_m2ledmac") }}</h2>
+      <h2>{{ $t("prompts.mauro_m2lv") }}</h2>
     </div>
 
     <div class="card-content">
@@ -36,7 +36,7 @@
 
 
 
-      <label>m2ledmac options:
+      <label>m2lv options:
         <input
             class="input input--block"
             type="text"
@@ -75,13 +75,13 @@
         <button
           id="focus-prompt"
           class="button button--flat"
-          @click="mauro_m2ledmac"
+          @click="mauro_m2lv"
           :disabled="isSaveDisabled"
-          :aria-label="$t('buttons.mauro_m2ledmac')"
-          :title="$t('buttons.mauro_m2ledmac')"
+          :aria-label="$t('buttons.mauro_m2lv')"
+          :title="$t('buttons.mauro_m2lv')"
           tabindex="2"
         >
-          {{ $t("buttons.mauro_m2ledmac") }}
+          {{ $t("buttons.mauro_m2lv") }}
         </button>
       </div>
     </div>
@@ -99,7 +99,7 @@ import buttons from "@/utils/buttons";
 import * as upload from "@/utils/upload";
 
 export default {
-  name: "mauro_m2ledmac",
+  name: "mauro_m2lv",
   components: { FileList },
   data: function () {
     return {
@@ -136,7 +136,7 @@ export default {
     eventuallyChangedDestination: function() {
 
         if(!this.mounted) {
-          console.log("Mauro_m2ledmac still not mounted");
+          console.log("Mauro_m2lv still not mounted");
           return;
         }
 
@@ -173,15 +173,15 @@ export default {
       }
 
       const selected = this.req.items[this.selected[0]].name
-      //rimuoviamo l'extension ed aggiungiamo "_m2ledmac"
-      return selected.substring(0, selected.lastIndexOf('.')) + "_m2ledmac";
+      //rimuoviamo l'extension ed aggiungiamo "_m2lv"
+      return selected.substring(0, selected.lastIndexOf('.')) + "_m2lv";
     },
-    mauro_m2ledmac: async function (event) {
+    mauro_m2lv: async function (event) {
 
       event.preventDefault();
 
       let action = async (overwrite, rename) => {
-        buttons.loading("mauro_m2ledmac");
+        buttons.loading("mauro_m2lv");
 
         const item = {
           from: this.req.items[this.selected[0]].url,
@@ -190,13 +190,13 @@ export default {
         }
 
         await api
-            .mauro("m2ledmac",item, encodeURIComponent(this.commandline), overwrite, rename)
+            .mauro("m2lv",item, encodeURIComponent(this.commandline), overwrite, rename)
             .then(() => {
-              buttons.success("mauro_m2ledmac");
-              this.$router.push({path: item.to + "/m2ledmac.OUT.log"}); //convenzione
+              buttons.success("mauro_m2lv");
+              this.$router.push({path: item.to + "/m2lv.OUT.log"}); //convenzione
             })
             .catch((e) => {
-              buttons.done("mauro_m2ledmac");
+              buttons.done("mauro_m2lv");
               this.$showError(e);
             });
       };

@@ -1,50 +1,87 @@
 <template>
-  <div class="card floating">
+  <div class="card floating" style="max-width: 40em;">
     <div class="card-title">
       <h2>{{ $t("prompts.mauro_pdflatex") }}</h2>
     </div>
 
-    <div class="card-content" >
+    <div class="card-content">
       <file-list
-        ref="fileList"
-        @update:selected="(val) => (dest = val)"
-        tabindex="1"
+          ref="fileList"
+          @update:selected="(val) => {eventuallyChangedDestination();}"
+          tabindex="1"
       />
+
+      <hr style="margin-bottom: 1.5em;"/>
+
+      <div style="display: none;">
+        <div style="display: inline-block; width: calc( 100% - 90px);">
+          <label>Destination Directory Name:
+            <input style="margin-bottom: 1em;"
+                   class="input input--block"
+                   type="text"
+                   v-on:keyup="eventuallyChangedDestination"
+                   v-model.trim="outputName"/>
+          </label>
+        </div>
+
+        <div ref="hideable" style="display: inline-block; margin-left: 10px; vertical-align: top; transition: opacity .6s;">
+          <label>Overwrite:
+            <input style="margin-bottom: 1em; margin-top: 10px;"
+                   class="input input--block"
+                   type="checkbox"
+                   ref="overwrite"
+                   @click="eventuallyChangedDestination"
+                   v-model.trim="overwrite"/>
+          </label>
+        </div>
+
+
+
+        <label>pdflatex options:
+          <input
+              class="input input--block"
+              type="text"
+              v-model.trim="commandline"
+          />
+        </label>
+
+
+      </div>
     </div>
 
     <div
-      class="card-action"
-      style="display: flex; align-items: center; justify-content: space-between"
+        class="card-action"
+        style="display: flex; align-items: center; justify-content: space-between"
     >
-      <template v-if="user.perm.create">
-        <button v-if="false"
-          class="button button--flat"
-          @click="$refs.fileList.createDir()"
-          :aria-label="$t('sidebar.newFolder')"
-          :title="$t('sidebar.newFolder')"
-          style="justify-self: left"
-        >
-          <span>{{ $t("sidebar.newFolder") }}</span>
-        </button>
-      </template>
-      <div>
+      <!--      <template v-if="user.perm.create">-->
+      <!--        <button-->
+      <!--          class="button button&#45;&#45;flat"-->
+      <!--          @click="$refs.fileList.createDir()"-->
+      <!--          :aria-label="$t('sidebar.newFolder')"-->
+      <!--          :title="$t('sidebar.newFolder')"-->
+      <!--          style="justify-self: left"-->
+      <!--        >-->
+      <!--          <span>{{ $t("sidebar.newFolder") }}</span>-->
+      <!--        </button>-->
+      <!--      </template>-->
+      <div style="width: 100%;">
         <button
-          class="button button--flat button--grey"
-          @click="closeHovers"
-          :aria-label="$t('buttons.cancel')"
-          :title="$t('buttons.cancel')"
-          tabindex="3"
+            class="button button--flat button--grey"
+            @click="closeHovers"
+            :aria-label="$t('buttons.cancel')"
+            :title="$t('buttons.cancel')"
+            tabindex="3"
         >
           {{ $t("buttons.cancel") }}
         </button>
         <button
-          id="focus-prompt"
-          class="button button--flat"
-          @click="mauro_pdflatex"
-          :disabled="false"
-          :aria-label="$t('buttons.mauro_pdflatex')"
-          :title="$t('buttons.mauro_pdflatex')"
-          tabindex="2"
+            id="focus-prompt"
+            class="button button--flat"
+            @click="mauro_pdflatex"
+            :disabled="isSaveDisabled"
+            :aria-label="$t('buttons.mauro_pdflatex')"
+            :title="$t('buttons.mauro_pdflatex')"
+            tabindex="2"
         >
           {{ $t("buttons.mauro_pdflatex") }}
         </button>
@@ -68,67 +105,110 @@ export default {
   components: { FileList },
   data: function () {
     return {
+      fileList: null,
+      outputName: "",
+      commandline: "",
       current: window.location.pathname,
       dest: null,
+      mounted: false,
+      saveDisabled: true,
+      overwrite: false,
+      hideable: null
     };
   },
   inject: ["$showError"],
   computed: {
     ...mapState(useFileStore, ["req", "selected"]),
     ...mapState(useAuthStore, ["user"]),
+    isSaveDisabled: function() {
+      return this.saveDisabled;
+    }
+  },
+  created() {
+    this.outputName = this.computeOutputName();
+  },
+  mounted() {
+    //this waits for subcompenents being mounted and starts the show
+    this.mounted = true;
+    this.eventuallyChangedDestination();
+
   },
   methods: {
     ...mapActions(useLayoutStore, ["showHover", "closeHovers"]),
-    mauro_pdflatex: async function (event) {
-      event.preventDefault();
-      let items = [];
+    eventuallyChangedDestination: function() {
 
-      const item = {
-        from: this.req.items[this.selected[0]].url,
-        //to: this.current +"/"+ this.outputName,
-        //name: this.outputName,
+      if(!this.mounted) {
+        console.log("Mauro_pdflatex still not mounted");
+        return;
       }
+
+      let conflicting = false;
+      //check for conflicts
+      for( let dir of this.$refs.fileList.items) {
+        if(this.outputName == dir.name) {
+          conflicting = true;
+          break;
+        }
+      }
+
+      //console.log(this.$refs.overwrite.checked)
+      //console.log("on",this.$refs.fileList.current , this.$refs.fileList.items);
+
+      if(conflicting) {
+        this.$refs.hideable.style.opacity = '1.0';
+        if (!this.$refs.overwrite.checked)
+          this.saveDisabled = true;
+        else
+          this.saveDisabled = false;
+
+      } else {
+        this.$refs.hideable.style.opacity = '0.0';
+        this.saveDisabled = false;
+      }
+    },
+
+    computeOutputName: function () {
+
+      if (this.selectedCount === 0 || this.selectedCount > 1) {
+        // This shouldn't happen.
+        return;
+      }
+
+      const selected = this.req.items[this.selected[0]].name
+
+      // //rimuoviamo l'extension ed aggiungiamo "_pdflatex"
+      // return selected.substring(0, selected.lastIndexOf('.')) + "_pdflatex";
+
+      //l'output directoy per pdflatex e' semplicemente la directory selezionata in questo caso
+      //quindi il nome here e' la stringa vuota
+      return '';
+
+    },
+    mauro_pdflatex: async function (event) {
+
+      event.preventDefault();
 
       let action = async (overwrite, rename) => {
         buttons.loading("mauro_pdflatex");
 
+        const item = {
+          from: this.req.items[this.selected[0]].url,
+          to: this.$refs.fileList.current + this.outputName,
+          name: this.outputName,
+        }
+
         await api
-          .mauro("pdflatex", item,"", overwrite, rename)
-          .then(() => {
-            buttons.success("mauro_pdflatex");
-            this.$router.push({ path: this.dest });
-          })
-          .catch((e) => {
-            buttons.done("mauro_pdflatex");
-            this.$showError(e);
-          });
+            .mauro("pdflatex",item, encodeURIComponent(this.commandline), overwrite, rename)
+            .then(() => {
+              buttons.success("mauro_pdflatex");
+              this.$router.push({path: item.to + "pdflatex.OUT.log"}); //convenzione
+            })
+            .catch((e) => {
+              buttons.done("mauro_pdflatex");
+              this.$showError(e);
+            });
       };
-
-      //let dstItems = (await api.fetch(this.dest)).items;
-      //let conflict = upload.checkConflict(items, dstItems);
-
-      let conflict = false;
-
-      let overwrite = false;
-      let rename = false;
-
-      if (conflict) {
-        this.showHover({
-          prompt: "replace-rename",
-          confirm: (event, option) => {
-            overwrite = option == "overwrite";
-            rename = option == "rename";
-
-            event.preventDefault();
-            this.closeHovers();
-            action(overwrite, rename);
-          },
-        });
-
-        return;
-      }
-
-      action(overwrite, rename);
+      action(false, false);
     },
   },
 };

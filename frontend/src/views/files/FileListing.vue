@@ -68,6 +68,13 @@
               show="mauro_m2ledmac"
           />
           <action
+              v-if="headerButtons.mauro_m2lv"
+              id="mauro_m2lv-button"
+              icon="list"
+              :label="$t('buttons.mauro_m2lv')"
+              show="mauro_m2lv"
+          />
+          <action
               v-if="headerButtons.mauro_m2hv"
               id="mauro_m2hv-button"
               icon="list_alt"
@@ -165,6 +172,13 @@
           icon="description"
           :label="$t('buttons.mauro_m2ledmac')"
           show="mauro_m2ledmac"
+      />
+      <action
+          v-if="headerButtons.mauro_m2lv"
+          id="mauro_m2lv-button"
+          icon="list_alt"
+          :label="$t('buttons.mauro_m2lv')"
+          show="mauro_m2lv"
       />
       <action
           v-if="headerButtons.mauro_m2hv"
@@ -342,7 +356,7 @@ import { users, files as api } from "@/api";
 import { enableExec } from "@/utils/constants";
 import * as upload from "@/utils/upload";
 import css from "@/utils/css";
-import throttle from "lodash/throttle";
+import { throttle } from "lodash-es";
 import { Base64 } from "js-base64";
 
 import HeaderBar from "@/components/header/HeaderBar.vue";
@@ -472,6 +486,7 @@ const headerButtons = computed(() => {
     unzip: fileStore.selectedCount === 1 && isArchive(fileStore.req!.items[fileStore.selected[0]]) && authStore.user?.perm.unzip,
     mauro_pdflatex: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
     mauro_m2hv: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
+    mauro_m2lv: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
     mauro_m2ledmac: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]]) && (true || authStore.user?.perm.mauro),
   };
 });
