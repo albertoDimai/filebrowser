@@ -189,6 +189,11 @@ export function mauro(command: string, item : any, commandline:string) {
   return Promise.all(promises);
 }
 
+export async function mauro_help(command: string) : Promise<string> {
+    const res = await fetchURL(`/api/mauro_help/${command}`, {});
+    return await res.text();
+}
+
   export function unzip(items : any[]) {
     console.log("unzip fn")
     return moveCopy(items, false, false,false, true);

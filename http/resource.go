@@ -448,3 +448,24 @@ var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (
 		Used:  usage.Used,
 	})
 })
+
+
+var mauroHelp = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	switch r.URL.Path {
+		case "/m2ledmac":
+			cmd := exec.Command("m2ledmac.help.sh") //nolint:gosec
+			out, err := cmd.CombinedOutput();
+			if( err != nil ) {
+				if( out != nil) {
+					return renderText(w,r, "Errore: " + string(out));
+				}
+				fmt.Println(err)
+				return renderText(w,r,"errore" );
+			}
+
+			return renderText(w,r, string(out));
+		default:
+			return renderText(w,r,r.URL.Path);
+	}
+})
+

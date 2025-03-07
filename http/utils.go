@@ -26,6 +26,14 @@ func renderJSON(w http.ResponseWriter, _ *http.Request, data interface{}) (int, 
 	return 0, nil
 }
 
+func renderText(w http.ResponseWriter, _ *http.Request, data string) (int, error) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	if _, err := w.Write([]byte(data)); err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return 0, nil
+}
+
 func errToStatus(err error) int {
 	switch {
 	case err == nil:

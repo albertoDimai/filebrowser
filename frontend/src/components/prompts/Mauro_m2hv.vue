@@ -190,7 +190,7 @@ export default {
         }
 
         await api
-            .mauro("m2hv",item, encodeURIComponent(this.commandline), overwrite, rename)
+            .mauro("m2hv",item, encodeURIComponent(this.commandline), rename)
             .then(() => {
               buttons.success("mauro_m2hv");
               this.$router.push({path: item.to + "/m2hv.OUT.log"}); //convenzione

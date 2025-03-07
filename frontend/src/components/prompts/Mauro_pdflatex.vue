@@ -198,7 +198,7 @@ export default {
         }
 
         await api
-            .mauro("pdflatex",item, encodeURIComponent(this.commandline), overwrite, rename)
+            .mauro("pdflatex",item, encodeURIComponent(this.commandline), rename)
             .then(() => {
               buttons.success("mauro_pdflatex");
               this.$router.push({path: item.to + "pdflatex.OUT.log"}); //convenzione
