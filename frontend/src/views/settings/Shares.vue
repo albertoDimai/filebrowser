@@ -9,6 +9,7 @@
 
         <div class="card-content full" v-if="links.length > 0">
           <table>
+            <tbody>
             <tr>
               <th>{{ t("settings.path") }}</th>
               <th>{{ t("settings.shareDuration") }}</th>
@@ -51,6 +52,7 @@
                 </button>
               </td>
             </tr>
+            </tbody>
           </table>
         </div>
         <h2 class="message" v-else>

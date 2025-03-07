@@ -7,6 +7,7 @@
     <template v-if="listing">
       <div class="card-content">
         <table>
+          <tbody>
           <tr>
             <th>#</th>
             <th>{{ $t("settings.shareDuration") }}</th>
@@ -63,6 +64,7 @@
               </button>
             </td>
           </tr>
+          </tbody>
         </table>
       </div>
 

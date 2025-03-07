@@ -14,6 +14,7 @@
 
         <div class="card-content full">
           <table>
+            <tbody>
             <tr>
               <th>{{ t("settings.username") }}</th>
               <th>{{ t("settings.admin") }}</th>
@@ -34,6 +35,7 @@
                 >
               </td>
             </tr>
+            </tbody>
           </table>
         </div>
       </div>
