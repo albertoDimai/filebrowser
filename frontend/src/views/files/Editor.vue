@@ -12,10 +12,12 @@
         @action="save()"
       />
 
+      <button class="action">
       <a v-if="isMauroM2hvFile"
          target="_blank"
          :href="rawMauroFile"
       > <i class="material-icons">open_in_browser</i> </a>
+      </button>
 
       <action
         icon="preview"
