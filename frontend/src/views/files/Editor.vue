@@ -5,12 +5,17 @@
       <title>{{ fileStore.req?.name ?? "" }}</title>
 
       <action
-        v-if="authStore.user?.perm.modify"
+        v-if="authStore.user?.perm.modify && !isMauroOutputFile"
         id="save-button"
         icon="save"
         :label="t('buttons.save')"
         @action="save()"
       />
+
+      <a v-if="isMauroM2hvFile"
+         target="_blank"
+         :href="rawMauroFile"
+      > <i class="material-icons">open_in_browser</i> </a>
 
       <action
         icon="preview"
@@ -67,11 +72,32 @@ const router = useRouter();
 
 const editor = ref<Ace.Editor | null>(null);
 
+//const rawContentLink = ref(null);
+
 const isPreview = ref(false);
 const previewContent = ref("");
 const isMarkdownFile =
   fileStore.req?.name.endsWith(".md") ||
   fileStore.req?.name.endsWith(".markdown");
+
+const isMauroOutputFile = isMauroOutFile(fileStore.req!.name);
+const isMauroM2hvFile = isMauroM2HVOutFile(fileStore.req!.name);
+
+const rawMauroFile = createRawMauroFile(fileStore.req!.url)
+
+function createRawMauroFile(path : string) {
+  //in      /files/gg_m2hv/m2hv.OUT.log
+  //out    /api/raw-inline/gg_m2hv/m2hv.OUT.log
+  return path.replace("/files/", "/api/raw-inline/").replace( "m2hv.OUT.log","index.html");
+}
+
+function isMauroOutFile(filename : string) {
+   return filename.match('^(m2lv|m2hv|meledmac)\\.OUT\\.log$')
+}
+
+function isMauroM2HVOutFile(filename : string) {
+  return isMauroOutFile(filename) && filename.startsWith('m2hv');
+}
 
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
@@ -106,13 +132,21 @@ onMounted(() => {
   editor.value = ace.edit("editor", {
     value: fileContent,
     showPrintMargin: false,
-    readOnly: fileStore.req?.type === "textImmutable",
-    theme: "ace/theme/chrome",
+    readOnly: fileStore.req?.type === "textImmutable" || isMauroOutFile(fileStore.req!.name),
+
+    theme: "ace/theme/terminal",
+    // theme: "ace/theme/chrome",
+
     mode: modelist.getModeForPath(fileStore.req!.name).mode,
     wrap: true,
-    enableBasicAutocompletion: true,
-    enableLiveAutocompletion: true,
+
+    enableBasicAutocompletion: false,
+    enableLiveAutocompletion: false,
     enableSnippets: true,
+
+    behavioursEnabled: false,
+    fontSize: "16px"
+
   });
 
   if (getTheme() === "dark") {
