@@ -93,7 +93,7 @@
 
 
   <div class="card floating" style="max-width: 80vw;" :hidden="isHelpHidden">
-    <div class="card-title"><h2>m2hv commandline help</h2>
+    <div class="card-title"><h2>m2lv commandline help</h2>
       <i class="material-icons" @click="close_help" style="cursor: pointer">close</i>
     </div>
     <div class="card-content">
