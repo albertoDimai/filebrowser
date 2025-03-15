@@ -12,6 +12,13 @@
 
       <template #actions>
         <template v-if="!isMobile">
+          <button class="action">
+            <a v-if="headerButtons.openInline"
+               target="_blank"
+               :href="rawInlineFile"
+            > <i class="material-icons">open_in_browser</i> </a>
+          </button>
+
           <action
             v-if="headerButtons.share"
             icon="share"
@@ -122,6 +129,14 @@
       <span v-if="fileStore.selectedCount > 0">
         {{ t("prompts.filesSelected", fileStore.selectedCount) }}
       </span>
+
+      <button class="action">
+        <a v-if="headerButtons.openInline"
+           target="_blank"
+           :href="rawInlineFile"
+        > <i class="material-icons">open_in_browser</i> </a>
+      </button>
+
       <action
         v-if="headerButtons.share"
         icon="share"
@@ -376,6 +391,8 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 
+
+
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
 const dragCounter = ref<number>(0);
@@ -396,6 +413,12 @@ const route = useRoute();
 const { t } = useI18n();
 
 const listing = ref<HTMLElement | null>(null);
+
+
+
+const rawInlineFile=computed( () =>
+    ((fileStore.req!.items[fileStore.selected[0]]).url).replace("/files/", "/api/raw-inline/")
+);
 
 const nameSorted = computed(() =>
   fileStore.req ? fileStore.req.sorting.by === "name" : false
@@ -483,6 +506,7 @@ const headerButtons = computed(() => {
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    openInline: fileStore.selectedCount == 1 && isHTMLFile(fileStore.req!.items[fileStore.selected[0]]),
     unzip: fileStore.selectedCount === 1 && isArchive(fileStore.req!.items[fileStore.selected[0]]) && authStore.user?.perm.unzip,
     mauro_pdflatex: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
     mauro_m2hv: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
@@ -1019,6 +1043,14 @@ const isMauroFile = (f : any) => {
     return false;
   const ext = f.extension
   const tex_exts = [".tex",".Tex",".teX",".TEX"]; //可扩展
+  return tex_exts.indexOf(ext) > -1;
+};
+
+const isHTMLFile = (f : any) => {
+  if(f.isDir)
+    return false;
+  const ext = f.extension
+  const tex_exts = [".html", ".htm", ".HTML", ".Html"];
   return tex_exts.indexOf(ext) > -1;
 };
 
