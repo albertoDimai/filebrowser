@@ -1,5 +1,5 @@
 <template>
-  <div class="card floating" style="max-width: 40em;">
+  <div class="card floating" style="max-width: 40em">
     <div class="card-title">
       <h2>{{ $t("prompts.mauro_pdflatex") }}</h2>
     </div>
@@ -11,9 +11,9 @@
           tabindex="1"
       />
 
-      <hr style="margin-bottom: 1.5em;"/>
+      <hr style="margin-bottom: 1.5em"/>
 
-      <div style="display: none;">
+      <div style="display: none">
         <div style="display: inline-block; width: calc( 100% - 90px);">
           <label>Destination Directory Name:
             <input style="margin-bottom: 1em;"
@@ -46,25 +46,14 @@
         </label>
 
 
-      </div>
+      </div> <!-- chiude blocco con display-none -->
     </div>
 
     <div
         class="card-action"
-        style="display: flex; align-items: center; justify-content: space-between"
+        style="display: flex; align-items: center; justify-content: space-between;
+        padding-bottom: 14px;"
     >
-      <!--      <template v-if="user.perm.create">-->
-      <!--        <button-->
-      <!--          class="button button&#45;&#45;flat"-->
-      <!--          @click="$refs.fileList.createDir()"-->
-      <!--          :aria-label="$t('sidebar.newFolder')"-->
-      <!--          :title="$t('sidebar.newFolder')"-->
-      <!--          style="justify-self: left"-->
-      <!--        >-->
-      <!--          <span>{{ $t("sidebar.newFolder") }}</span>-->
-      <!--        </button>-->
-      <!--      </template>-->
-      <div style="width: 100%;">
         <button
             class="button button--flat button--grey"
             @click="closeHovers"
@@ -75,18 +64,20 @@
           {{ $t("buttons.cancel") }}
         </button>
         <button
-            id="focus-prompt"
+            id="action-button"
             class="button button--flat"
             @click="mauro_pdflatex"
             :disabled="isSaveDisabled"
             :aria-label="$t('buttons.mauro_pdflatex')"
             :title="$t('buttons.mauro_pdflatex')"
             tabindex="2"
-        >
+            style="display: flex;
+          align-items: center;
+          gap: 5px;">
+          <i class="material-icons">start</i>
           {{ $t("buttons.mauro_pdflatex") }}
         </button>
       </div>
-    </div>
   </div>
 </template>
 
@@ -98,7 +89,6 @@ import { useAuthStore } from "@/stores/auth";
 import FileList from "./FileList.vue";
 import { files as api } from "@/api";
 import buttons from "@/utils/buttons";
-import * as upload from "@/utils/upload";
 
 export default {
   name: "mauro_pdflatex",
@@ -144,7 +134,7 @@ export default {
 
       let conflicting = false;
       //check for conflicts
-      for( let dir of this.$refs.fileList.items) {
+      for( const dir of this.$refs.fileList.items) {
         if(this.outputName == dir.name) {
           conflicting = true;
           break;
@@ -174,7 +164,7 @@ export default {
         return;
       }
 
-      const selected = this.req.items[this.selected[0]].name
+      // const selected = this.req.items[this.selected[0]].name
 
       // //rimuoviamo l'extension ed aggiungiamo "_pdflatex"
       // return selected.substring(0, selected.lastIndexOf('.')) + "_pdflatex";
@@ -188,8 +178,8 @@ export default {
 
       event.preventDefault();
 
-      let action = async (overwrite, rename) => {
-        buttons.loading("mauro_pdflatex");
+      const action = async (overwrite, rename) => {
+        buttons.loading("action");
 
         const item = {
           from: this.req.items[this.selected[0]].url,
@@ -200,11 +190,11 @@ export default {
         await api
             .mauro("pdflatex",item, encodeURIComponent(this.commandline), rename)
             .then(() => {
-              buttons.success("mauro_pdflatex");
+              buttons.success("action");
               this.$router.push({path: item.to + "pdflatex.OUT.log"}); //convenzione
             })
             .catch((e) => {
-              buttons.done("mauro_pdflatex");
+              buttons.done("action");
               this.$showError(e);
             });
       };

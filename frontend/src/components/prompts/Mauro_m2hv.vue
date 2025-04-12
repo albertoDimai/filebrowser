@@ -75,7 +75,7 @@
           {{ $t("buttons.cancel") }}
         </button>
         <button
-          id="action-prompt"
+          id="action-button"
           class="button button--flat"
           @click="mauro_m2hv"
           :disabled="isSaveDisabled"
@@ -211,7 +211,7 @@ export default {
         await api
             .mauro("m2hv",item, encodeURIComponent(this.commandline), rename)
             .then(() => {
-              buttons.success("mauro_m2hv");
+              buttons.success("action");
               this.$router.push({path: item.to + "/m2hv.OUT.log"}); //convenzione
             })
             .catch((e) => {

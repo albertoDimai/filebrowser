@@ -75,7 +75,7 @@
           {{ $t("buttons.cancel") }}
         </button>
         <button
-          id="focus-prompt"
+          id="action-button"
           class="button button--flat"
           @click="mauro_m2lv"
           :disabled="isSaveDisabled"
@@ -201,7 +201,7 @@ export default {
       event.preventDefault();
 
       const action = async (overwrite, rename) => {
-        buttons.loading("mauro_m2lv");
+        buttons.loading("action");
 
         const item = {
           from: this.req.items[this.selected[0]].url,
@@ -212,7 +212,7 @@ export default {
         await api
             .mauro("m2lv",item, encodeURIComponent(this.commandline), rename)
             .then(() => {
-              buttons.success("mauro_m2lv");
+              buttons.success("action");
               this.$router.push({path: item.to + "/m2lv.OUT.log"}); //convenzione
             })
             .catch((e) => {
