@@ -11,7 +11,7 @@ outfile=pdflatex.OUT.log
 outdir="${2}"
 
 ##ASSUMIAMO (e non funzona altrimenti) che outdir e la path del file siano la medesima !!
-
+## commandline non viene passata dal server quindi di fatto e' sempre vuoto
 COMMANDLINE="${3}"
 
 echo infile $infile
@@ -24,10 +24,10 @@ echo pwd: $(pwd)
 
 (
     cd "$outdir"
-    echo "EXECUTING: " pdflatex "$COMMANDLINE" "./$infile_name"
+    echo "EXECUTING: " pdflatex --interaction=nonstopmode "$COMMANDLINE" "./$infile_name"
     echo "----"
-    
-    ${DRYRUN} pdflatex $COMMANDLINE "./$infile_name"
+
+    ${DRYRUN} pdflatex --interaction=nonstopmode $COMMANDLINE "./$infile_name"
 
 ) > "$outdir/$outfile" 2>&1
 
