@@ -94,7 +94,7 @@ function createRawMauroFile(path : string) {
 }
 
 function isMauroOutFile(filename : string) {
-   return filename.match('^(m2lv|m2hv|m2ledmac)\\.OUT\\.log$')
+   return filename.match('^(m2lv|m2hv|m2ledmac|pdflatex)\\.OUT\\.log$')
 }
 
 function isMauroM2HVOutFile(filename : string) {
