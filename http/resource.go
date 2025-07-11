@@ -336,6 +336,7 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 		}
 
 		return fileutils.MoveFile(d.user.Fs, src, dst)
+
 	case "unzip":
 		if !d.user.Perm.Unzip {
 			return fbErrors.ErrPermissionDenied
@@ -350,38 +351,31 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 		}
 		src = d.user.FullPath(src)
 		dst = d.user.FullPath(dst)
-
 		println("executing: " + "pdflatex.wrapper.sh " + src  + " " + dst  )
-
 		cmd := exec.Command("pdflatex.wrapper.sh", src, dst) //nolint:gosec
-		return cmd.Start()
+		return cmd.Run()
 
 	case "mauro:m2hv":
 		if false /*|| !d.user.Perm.Mauro*/ {
 			return fbErrors.ErrPermissionDenied
 		}
-
 		src = d.user.FullPath(src)
 		dst = d.user.FullPath(dst)
-
 		comamndline_arguments := request.URL.Query().Get("commandline");
 		comamndline, err := url.QueryUnescape(comamndline_arguments);
 		if err != nil {
 			return fmt.Errorf("error parsing options %s: %w", comamndline_arguments, fbErrors.ErrInvalidRequestParams)
 		}
-		//
 		println("executing: " + "m2hv.wrapper.sh " + src  + " " + dst + " " +  comamndline )
-
 		cmd := exec.Command("m2hv.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
+
 	case "mauro:m2lv":
 		if false /*|| !d.user.Perm.Mauro*/ {
 			return fbErrors.ErrPermissionDenied
 		}
-
 		src = d.user.FullPath(src)
 		dst = d.user.FullPath(dst)
-
 		comamndline_arguments := request.URL.Query().Get("commandline");
 		comamndline, err := url.QueryUnescape(comamndline_arguments);
 		if err != nil {
@@ -392,6 +386,7 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 
 		cmd := exec.Command("m2lv.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
+
 	case "mauro:m2ledmac":
 		if false /*|| !d.user.Perm.Mauro*/ {
 			return fbErrors.ErrPermissionDenied
@@ -408,6 +403,7 @@ func patchAction(ctx context.Context, action, src, dst string, request  *http.Re
 
 		cmd := exec.Command("m2ledmac.wrapper.sh", src, dst, comamndline) //nolint:gosec
 		return cmd.Run()
+
 	default:
 		return fmt.Errorf("unsupported action %s: %w", action, fbErrors.ErrInvalidRequestParams)
 	}
@@ -448,3 +444,47 @@ var diskUsage = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (
 		Used:  usage.Used,
 	})
 })
+
+var mauroHelp = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+	switch r.URL.Path {
+		case "/m2ledmac":
+			cmd := exec.Command("m2ledmac.help.sh") //nolint:gosec
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				if out != nil {
+					return renderText(w, r, "Errore: "+string(out))
+				}
+				fmt.Println(err)
+				return renderText(w, r, "errore")
+			}
+			return renderText(w, r, string(out))
+
+		case "/m2hv":
+			cmd := exec.Command("m2hv.help.sh") //nolint:gosec
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				if out != nil {
+					return renderText(w, r, "Errore: "+string(out))
+				}
+				fmt.Println(err)
+				return renderText(w, r, "errore")
+			}
+			return renderText(w, r, string(out))
+
+		case "/m2lv":
+			cmd := exec.Command("m2lv.help.sh") //nolint:gosec
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				if out != nil {
+					return renderText(w, r, "Errore: "+string(out))
+				}
+				fmt.Println(err)
+				return renderText(w, r, "errore")
+			}
+			return renderText(w, r, string(out))
+
+		default:
+			return renderText(w, r, r.URL.Path)
+	}
+})
+

@@ -9,6 +9,13 @@
     "src/components/prompts/FileList.vue",
     "src/components/prompts/Rename.vue",
     "src/components/prompts/Share.vue",
-    "src/components/prompts/UploadFiles.vue"
+    "src/components/prompts/UploadFiles.vue",
+      //maurotex added files
+      "src/components/prompts/Unzip.vue",
+      "src/components/prompts/Mauro_m2hv.vue",
+      "src/components/prompts/Mauro_m2ledmac.vue",
+      "src/components/prompts/Mauro_m2lv.vue",
+      "src/components/prompts/Mauro_pdflatex.vue"
+
   ]
 }

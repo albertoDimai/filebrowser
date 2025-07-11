@@ -1,6 +1,7 @@
 import { createURL, fetchURL, removePrefix } from "./utils";
 import { baseURL } from "@/utils/constants";
 import { useAuthStore } from "@/stores/auth";
+import { useLayoutStore } from "@/stores/layout";
 import { upload as postTus, useTus } from "./tus";
 
 export async function fetch(url: string) {
@@ -150,10 +151,15 @@ async function postResources(
   });
 }
 
-
-
-  function moveCopy(items: any[], copy = false, overwrite = false, rename = false, unzip = false) {
-    const promises = [];
+function moveCopy(
+  items: any[],
+  copy = false,
+  overwrite = false,
+  rename = false,
+  unzip = false
+) {
+  const layoutStore = useLayoutStore();
+  const promises = [];
 
   for (const item of items) {
     const from = item.from;
@@ -164,12 +170,12 @@ async function postResources(
     console.log(url);
     promises.push(resourceAction(url, "PATCH"));
   }
-
+  layoutStore.closeHovers();
   return Promise.all(promises);
 }
 
 
-export function mauro(command: string, item : any, commandline:string ,owerwrite : boolean, rename: boolean) {
+export function mauro(command: string, item : any, commandline:string) {
   //console.log("mauro fn", item)
   // return moveCopy(items, false, false,false, false, true);
   const promises = [];
@@ -181,6 +187,11 @@ export function mauro(command: string, item : any, commandline:string ,owerwrite
 
 
   return Promise.all(promises);
+}
+
+export async function mauro_help(command: string) : Promise<string> {
+    const res = await fetchURL(`/api/mauro_help/${command}`, {});
+    return await res.text();
 }
 
   export function unzip(items : any[]) {

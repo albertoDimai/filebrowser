@@ -48,22 +48,24 @@
     </div>
 
     <div
-      class="card-action"
-      style="display: flex; align-items: center; justify-content: space-between"
+        class="card-action"
+        style="
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 14px;"
     >
-<!--      <template v-if="user.perm.create">-->
-<!--        <button-->
-<!--          class="button button&#45;&#45;flat"-->
-<!--          @click="$refs.fileList.createDir()"-->
-<!--          :aria-label="$t('sidebar.newFolder')"-->
-<!--          :title="$t('sidebar.newFolder')"-->
-<!--          style="justify-self: left"-->
-<!--        >-->
-<!--          <span>{{ $t("sidebar.newFolder") }}</span>-->
-<!--        </button>-->
-<!--      </template>-->
-      <div style="width: 100%;">
-        <button
+      <button
+          id="help-button"
+          class="button button--flat button--grey"
+          style="float: left"
+          @click="mauro_m2lv_help"
+          :aria-label="$t('buttons.command_help')"
+          :title="$t('buttons.command_help')"
+          tabindex="4"
+      >
+        <i class="material-icons" style="font-size: 2rem;">help</i>
+      </button>
+      <div style="flex-grow: 1;"></div>
+      <button
           class="button button--flat button--grey"
           @click="closeHovers"
           :aria-label="$t('buttons.cancel')"
@@ -73,17 +75,29 @@
           {{ $t("buttons.cancel") }}
         </button>
         <button
-          id="focus-prompt"
+          id="action-button"
           class="button button--flat"
           @click="mauro_m2lv"
           :disabled="isSaveDisabled"
           :aria-label="$t('buttons.mauro_m2lv')"
           :title="$t('buttons.mauro_m2lv')"
           tabindex="2"
-        >
+          style="display: flex;
+          align-items: center;
+          gap: 5px;">
+          <i class="material-icons">start</i>
           {{ $t("buttons.mauro_m2lv") }}
         </button>
       </div>
+    </div>
+
+
+  <div class="card floating" style="max-width: 80vw;" :hidden="isHelpHidden">
+    <div class="card-title"><h2>m2lv commandline help</h2>
+      <i class="material-icons" @click="close_help" style="cursor: pointer">close</i>
+    </div>
+    <div class="card-content">
+      <pre class="code">{{helpText}}</pre>
     </div>
   </div>
 </template>
@@ -110,6 +124,9 @@ export default {
       dest: null,
       mounted: false,
       saveDisabled: true,
+      helpHidden: true,
+      helpText: null,
+      helpLoaded: false,
       overwrite: false,
       hideable: null
     };
@@ -120,6 +137,9 @@ export default {
     ...mapState(useAuthStore, ["user"]),
     isSaveDisabled: function() {
       return this.saveDisabled;
+    },
+    isHelpHidden: function () {
+      return this.helpHidden;
     }
   },
   created() {
@@ -142,7 +162,7 @@ export default {
 
       let conflicting = false;
         //check for conflicts
-        for( let dir of this.$refs.fileList.items) {
+        for( const dir of this.$refs.fileList.items) {
           if(this.outputName == dir.name) {
               conflicting = true;
               break;
@@ -180,8 +200,8 @@ export default {
 
       event.preventDefault();
 
-      let action = async (overwrite, rename) => {
-        buttons.loading("mauro_m2lv");
+      const action = async (overwrite, rename) => {
+        buttons.loading("action");
 
         const item = {
           from: this.req.items[this.selected[0]].url,
@@ -190,17 +210,48 @@ export default {
         }
 
         await api
-            .mauro("m2lv",item, encodeURIComponent(this.commandline), overwrite, rename)
+            .mauro("m2lv",item, encodeURIComponent(this.commandline), rename)
             .then(() => {
-              buttons.success("mauro_m2lv");
+              buttons.success("action");
               this.$router.push({path: item.to + "/m2lv.OUT.log"}); //convenzione
             })
             .catch((e) => {
-              buttons.done("mauro_m2lv");
+              buttons.done("action");
               this.$showError(e);
             });
       };
       action(false, false);
+    },
+    close_help: async function () {
+      this.helpHidden = true;
+    },
+    mauro_m2lv_help: async function (event) {
+
+      event.preventDefault();
+
+      if (!this.helpLoaded) {
+        console.log("caricamento")
+        this.helpLoaded = true
+
+        buttons.loading("help");
+        await api
+            .mauro_help("m2lv")
+            .then((response) => {
+              buttons.success("help");
+              this.helpText = response;
+              this.helpHidden = false;
+            })
+            .catch((e) => {
+              buttons.done("help");
+              this.$showError(e);
+            });
+
+      } else {
+        this.helpHidden = false;
+      }
+
+
+
     },
   },
 };

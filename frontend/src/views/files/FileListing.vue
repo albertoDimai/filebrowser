@@ -12,6 +12,13 @@
 
       <template #actions>
         <template v-if="!isMobile">
+          <button class="action">
+            <a v-if="headerButtons.openInline"
+               target="_blank"
+               :href="rawInlineFile"
+            > <i class="material-icons">open_in_browser</i> </a>
+          </button>
+
           <action
             v-if="headerButtons.share"
             icon="share"
@@ -122,6 +129,14 @@
       <span v-if="fileStore.selectedCount > 0">
         {{ t("prompts.filesSelected", fileStore.selectedCount) }}
       </span>
+
+      <button class="action">
+        <a v-if="headerButtons.openInline"
+           target="_blank"
+           :href="rawInlineFile"
+        > <i class="material-icons">open_in_browser</i> </a>
+      </button>
+
       <action
         v-if="headerButtons.share"
         icon="share"
@@ -376,6 +391,8 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 
+
+
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
 const dragCounter = ref<number>(0);
@@ -396,6 +413,12 @@ const route = useRoute();
 const { t } = useI18n();
 
 const listing = ref<HTMLElement | null>(null);
+
+
+
+const rawInlineFile=computed( () =>
+    ((fileStore.req!.items[fileStore.selected[0]]).url).replace("/files/", "/api/raw-inline/")
+);
 
 const nameSorted = computed(() =>
   fileStore.req ? fileStore.req.sorting.by === "name" : false
@@ -483,6 +506,7 @@ const headerButtons = computed(() => {
     share: fileStore.selectedCount === 1 && authStore.user?.perm.share,
     move: fileStore.selectedCount > 0 && authStore.user?.perm.rename,
     copy: fileStore.selectedCount > 0 && authStore.user?.perm.create,
+    openInline: fileStore.selectedCount == 1 && isHTMLFile(fileStore.req!.items[fileStore.selected[0]]),
     unzip: fileStore.selectedCount === 1 && isArchive(fileStore.req!.items[fileStore.selected[0]]) && authStore.user?.perm.unzip,
     mauro_pdflatex: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
     mauro_m2hv: fileStore.selectedCount === 1 && isMauroFile(fileStore.req!.items[fileStore.selected[0]])  && (true || authStore.user?.perm.mauro),
@@ -599,12 +623,12 @@ const keyEvent = (event: KeyboardEvent) => {
       break;
     case "a":
       event.preventDefault();
-      for (let file of items.value.files) {
+      for (const file of items.value.files) {
         if (fileStore.selected.indexOf(file.index) === -1) {
           fileStore.selected.push(file.index);
         }
       }
-      for (let dir of items.value.dirs) {
+      for (const dir of items.value.dirs) {
         if (fileStore.selected.indexOf(dir.index) === -1) {
           fileStore.selected.push(dir.index);
         }
@@ -627,9 +651,9 @@ const copyCut = (event: Event | KeyboardEvent): void => {
 
   if (fileStore.req === null) return;
 
-  let items = [];
+  const items = [];
 
-  for (let i of fileStore.selected) {
+  for (const i of fileStore.selected) {
     items.push({
       from: fileStore.req.items[i].url,
       name: fileStore.req.items[i].name,
@@ -651,9 +675,9 @@ const paste = (event: Event) => {
   if ((event.target as HTMLElement).tagName?.toLowerCase() === "input") return;
 
   // TODO router location should it be
-  let items: any[] = [];
+  const items: any[] = [];
 
-  for (let item of clipboardStore.items) {
+  for (const item of clipboardStore.items) {
     const from = item.from.endsWith("/") ? item.from.slice(0, -1) : item.from;
     const to = route.path + encodeURIComponent(item.name);
     items.push({ from, to, name: item.name });
@@ -690,7 +714,7 @@ const paste = (event: Event) => {
     return;
   }
 
-  let conflict = upload.checkConflict(items, fileStore.req!.items);
+  const conflict = upload.checkConflict(items, fileStore.req!.items);
 
   let overwrite = false;
   let rename = false;
@@ -716,14 +740,13 @@ const paste = (event: Event) => {
 
 const colunmsResize = () => {
   // Update the columns size based on the window width.
-  let items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
+  const items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
   if (items_ === null) return;
 
   let columns = Math.floor(
     (document.querySelector("main")?.offsetWidth ?? 0) / columnWidth.value
   );
   if (columns === 0) columns = 1;
-  // @ts-ignore never type error
   items_.style.width = `calc(${100 / columns}% - 1em)`;
 };
 
@@ -753,11 +776,10 @@ const dragEnter = () => {
 
   // When the user starts dragging an item, put every
   // file on the listing with 50% opacity.
-  let items = document.getElementsByClassName("item");
+  const items = document.getElementsByClassName("item");
 
-  // @ts-ignore
-  Array.from(items).forEach((file: HTMLElement) => {
-    file.style.opacity = "0.5";
+  Array.from(items).forEach((file: Element) => {
+    (file as HTMLElement).style.opacity = "0.5";
   });
 };
 
@@ -774,7 +796,7 @@ const drop = async (event: DragEvent) => {
   dragCounter.value = 0;
   resetOpacity();
 
-  let dt = event.dataTransfer;
+  const dt = event.dataTransfer;
   let el: HTMLElement | null = event.target as HTMLElement;
 
   if (fileStore.req === null || dt === null || dt.files.length <= 0) return;
@@ -785,7 +807,7 @@ const drop = async (event: DragEvent) => {
     }
   }
 
-  let files: UploadList = (await upload.scanFiles(dt)) as UploadList;
+  const files: UploadList = (await upload.scanFiles(dt)) as UploadList;
   let items = fileStore.req.items;
   let path = route.path.endsWith("/") ? route.path : route.path + "/";
 
@@ -805,7 +827,7 @@ const drop = async (event: DragEvent) => {
     }
   }
 
-  let conflict = upload.checkConflict(files, items);
+  const conflict = upload.checkConflict(files, items);
 
   if (conflict) {
     layoutStore.showHover({
@@ -829,12 +851,10 @@ const drop = async (event: DragEvent) => {
 };
 
 const uploadInput = (event: Event) => {
-  layoutStore.closeHovers();
-
-  let files = (event.currentTarget as HTMLInputElement)?.files;
+  const files = (event.currentTarget as HTMLInputElement)?.files;
   if (files === null) return;
 
-  let folder_upload = !!files[0].webkitRelativePath;
+  const folder_upload = !!files[0].webkitRelativePath;
 
   const uploadFiles: UploadList = [];
   for (let i = 0; i < files.length; i++) {
@@ -849,8 +869,8 @@ const uploadInput = (event: Event) => {
     });
   }
 
-  let path = route.path.endsWith("/") ? route.path : route.path + "/";
-  let conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
+  const path = route.path.endsWith("/") ? route.path : route.path + "/";
+  const conflict = upload.checkConflict(uploadFiles, fileStore.req!.items);
 
   if (conflict) {
     layoutStore.showHover({
@@ -874,7 +894,7 @@ const uploadInput = (event: Event) => {
 };
 
 const resetOpacity = () => {
-  let items = document.getElementsByClassName("item");
+  const items = document.getElementsByClassName("item");
 
   Array.from(items).forEach((file: Element) => {
     (file as HTMLElement).style.opacity = "1";
@@ -900,7 +920,6 @@ const sort = async (by: string) => {
 
   try {
     if (authStore.user?.id) {
-      // @ts-ignore
       await users.update({ id: authStore.user?.id, sorting: { by, asc } }, [
         "sorting",
       ]);
@@ -951,10 +970,10 @@ const download = () => {
     confirm: (format: any) => {
       layoutStore.closeHovers();
 
-      let files = [];
+      const files = [];
 
       if (fileStore.selectedCount > 0 && fileStore.req !== null) {
-        for (let i of fileStore.selected) {
+        for (const i of fileStore.selected) {
           files.push(fileStore.req.items[i].url);
         }
       } else {
@@ -977,13 +996,12 @@ const switchView = async () => {
 
   const data = {
     id: authStore.user?.id,
-    viewMode: modes[authStore.user?.viewMode ?? "list"] || "list",
+    viewMode: (modes[authStore.user?.viewMode ?? "list"] ||
+      "list") as ViewModeType,
   };
 
-  // @ts-ignore
   users.update(data, ["viewMode"]).catch($showError);
 
-  // @ts-ignore
   authStore.updateUser(data);
 
   setItemWeight();
@@ -1025,6 +1043,14 @@ const isMauroFile = (f : any) => {
     return false;
   const ext = f.extension
   const tex_exts = [".tex",".Tex",".teX",".TEX"]; //可扩展
+  return tex_exts.indexOf(ext) > -1;
+};
+
+const isHTMLFile = (f : any) => {
+  if(f.isDir)
+    return false;
+  const ext = f.extension
+  const tex_exts = [".html", ".htm", ".HTML", ".Html"];
   return tex_exts.indexOf(ext) > -1;
 };
 

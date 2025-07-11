@@ -1,5 +1,6 @@
 {
   "buttons": {
+    "command_help": "Command help",
     "mauro_pdflatex": "PdfLaTeX",
     "mauro_m2ledmac": "m2ledmac",
     "mauro_m2hv": "m2hv",
