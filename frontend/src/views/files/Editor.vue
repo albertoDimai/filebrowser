@@ -4,8 +4,15 @@
       <action icon="close" :label="t('buttons.close')" @action="close()" />
       <title>{{ fileStore.req?.name ?? "" }}</title>
 
+      <i
+        v-if="!readonly"
+        class="autosave-label material-icons"
+        style="opacity: 0; font-size: 90%; cursor: help"
+        >published_with_changes</i
+      >
+
       <action
-        v-if="authStore.user?.perm.modify && !isMauroOutputFile"
+        v-if="!readonly"
         id="save-button"
         icon="save"
         :label="t('buttons.save')"
@@ -13,10 +20,9 @@
       />
 
       <button class="action">
-      <a v-if="isMauroM2hvFile"
-         target="_blank"
-         :href="rawMauroFile"
-      > <i class="material-icons">open_in_browser</i> </a>
+        <a v-if="isMauroM2hvFile" target="_blank" :href="rawMauroFile">
+          <i class="material-icons">open_in_browser</i>
+        </a>
       </button>
 
       <action
@@ -84,26 +90,43 @@ const isMarkdownFile =
 
 const isMauroOutputFile = isMauroOutFile(fileStore.req!.name);
 const isMauroM2hvFile = isMauroM2HVOutFile(fileStore.req!.name);
+const readonly =
+  !authStore.user?.perm.modify ||
+  fileStore.req?.type === "textImmutable" ||
+  isMauroOutputFile;
 
-const rawMauroFile = createRawMauroFile(fileStore.req!.url)
+const rawMauroFile = createRawMauroFile(fileStore.req!.url);
 
-function createRawMauroFile(path : string) {
+function createRawMauroFile(path: string) {
   //in      /files/gg_m2hv/m2hv.OUT.log
   //out    /api/raw-inline/gg_m2hv/m2hv.OUT.log
-  return path.replace("/files/", "/api/raw-inline/").replace( "m2hv.OUT.log","index.html");
+  return path
+    .replace("/files/", "/api/raw-inline/")
+    .replace("m2hv.OUT.log", "index.html");
 }
 
-function isMauroOutFile(filename : string) {
-   return filename.match('^(m2lv|m2hv|m2ledmac|pdflatex)\\.OUT\\.log$')
+function isMauroOutFile(filename: string) {
+  return filename.match("^(m2lv|m2hv|m2ledmac|pdflatex)\\.OUT\\.log$") != null;
 }
 
-function isMauroM2HVOutFile(filename : string) {
-  return isMauroOutFile(filename) && filename.startsWith('m2hv');
+function isMauroM2HVOutFile(filename: string) {
+  return isMauroOutFile(filename) && filename.startsWith("m2hv");
 }
+
+/* state vars relative al sistema di bacup/autosave */
+let timerId: NodeJS.Timeout | undefined = undefined;
+const timeoutInSeconds = 10;
+let lastSavedRevision: number = -1;
+let backupFileName: string | undefined = undefined;
 
 onMounted(() => {
   window.addEventListener("keydown", keyEvent);
   window.addEventListener("wheel", handleScroll);
+
+  if (!readonly)
+    timerId = setInterval(function () {
+      autoSave();
+    }, timeoutInSeconds * 1000);
 
   const fileContent = fileStore.req?.content || "";
 
@@ -134,7 +157,9 @@ onMounted(() => {
   editor.value = ace.edit("editor", {
     value: fileContent,
     showPrintMargin: false,
-    readOnly: fileStore.req?.type === "textImmutable" || isMauroOutFile(fileStore.req!.name),
+    readOnly:
+      fileStore.req?.type === "textImmutable" ||
+      isMauroOutFile(fileStore.req!.name),
 
     theme: "ace/theme/terminal",
     // theme: "ace/theme/chrome",
@@ -147,8 +172,7 @@ onMounted(() => {
     enableSnippets: true,
 
     behavioursEnabled: false,
-    fontSize: "16px"
-
+    fontSize: "16px",
   });
 
   if (getTheme() === "dark") {
@@ -162,6 +186,8 @@ onBeforeUnmount(() => {
   window.removeEventListener("keydown", keyEvent);
   window.removeEventListener("wheel", handleScroll);
   editor.value?.destroy();
+
+  window.clearInterval(timerId);
 });
 
 const keyEvent = (event: KeyboardEvent) => {
@@ -195,6 +221,14 @@ const save = async () => {
   try {
     await api.put(route.path, editor.value?.getValue());
     editor.value?.session.getUndoManager().markClean();
+    lastSavedRevision = -1;
+
+    //eliminiamo anche l'eventuale backup file
+    if(backupFileName) {
+      console.log("eliminating auto backup file ", backupFileName)
+      await api.remove(backupFileName)
+    }
+
     buttons.success(button);
   } catch (e: any) {
     buttons.done(button);
@@ -215,5 +249,67 @@ const close = () => {
 
 const preview = () => {
   isPreview.value = !isPreview.value;
+};
+
+const autoSave = () => {
+  console.log("autosaving");
+
+  if (editor.value?.session.getUndoManager().isClean()) {
+    console.log("no changes, no autsaving");
+    return;
+  }
+
+  if (
+    editor.value?.session.getUndoManager().getRevision() == lastSavedRevision
+  ) {
+    console.log("all changes already saved, no autsaving");
+    return;
+  }
+
+  const lbl = document.querySelector(".autosave-label") as HTMLElement;
+  if (lbl) {
+    lbl.style.opacity = "1.0";
+    lbl.title = "saving";
+  }
+
+  const _actualAutoSave = async () => {
+    try {
+      //create backup name
+      const idx = route.path.lastIndexOf("/") + 1;
+
+      //salva col nome di backup
+      if (!backupFileName) {
+        backupFileName = [
+          route.path.slice(0, idx),
+          "%23",
+          route.path.slice(idx),
+        ].join("");
+      }
+
+      if (lastSavedRevision < 0) {
+        //al primo autosave creiamo il file se non c'e' e lo svuotiamo
+        await api.post(backupFileName, "", true);
+      }
+
+      lastSavedRevision =
+        editor.value?.session.getUndoManager().getRevision() || -1;
+
+      await api.put(backupFileName, editor.value?.getValue());
+
+      const lastsave = "last autosave at " + new Date().toLocaleTimeString();
+      console.log("autosaving done: ", lastsave);
+
+      if (lbl) {
+        lbl.title = lastsave;
+        lbl.style.opacity = "0.5";
+      } else {
+        console.log("lbl not available:", lastsave);
+      }
+    } catch (e: any) {
+      $showError(e);
+    }
+  };
+
+  _actualAutoSave();
 };
 </script>
