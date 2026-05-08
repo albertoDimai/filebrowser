@@ -4,13 +4,55 @@
       <action icon="close" :label="t('buttons.close')" @action="close()" />
       <title>{{ fileStore.req?.name ?? "" }}</title>
 
+      <!--      <action-->
+      <!--        v-if="!readonly"-->
+      <!--        id="help-button"-->
+      <!--        icon="help"-->
+      <!--        :label="t('buttons.help')"-->
+      <!--        @action="editorHelp()"-->
+      <!--      />-->
+
+      <action
+        v-if="!readonly"
+        id="help-button"
+        icon="search"
+        :label="t('buttons.search')"
+        @action="editorSearch()"
+      />
+
+      <action
+        v-if="!readonly"
+        id="help-button"
+        icon="find_replace"
+        :label="t('buttons.replace')"
+        @action="editorReplace()"
+      />
+
+      <action
+        v-if="!readonly"
+        id="help-button"
+        icon="settings"
+        :label="t('buttons.settings')"
+        @action="editorSettings()"
+      />
+
+      <action
+        v-if="!readonly"
+        id="help-button"
+        icon="keyboard"
+        :label="t('buttons.keybindings')"
+        @action="editorKeybindings()"
+      />
+
+      <div style="width: 10px; height: 10px"></div>
+
       <i
         v-if="!readonly"
         class="autosave-label material-icons"
-        style="opacity: 0; font-size: 90%; cursor: help"
-        >published_with_changes</i
+        style="visibility: hidden; opacity: 0; font-size: 90%; cursor: help"
       >
-
+        published_with_changes
+      </i>
       <action
         v-if="!readonly"
         id="save-button"
@@ -179,6 +221,16 @@ onMounted(() => {
     editor.value!.setTheme("ace/theme/twilight");
   }
 
+  editor.value.commands.addCommand({
+    name: "showKeyboardShortcuts",
+    bindKey: { win: "Ctrl-Alt-h", mac: "Command-Alt-h" },
+    exec: function (editor) {
+      ace.config.loadModule("ace/ext/keybinding_menu", function (module) {
+        module.init(editor);
+        editor.showKeyboardShortcuts();
+      });
+    },
+  });
   editor.value.focus();
 });
 
@@ -224,9 +276,9 @@ const save = async () => {
     lastSavedRevision = -1;
 
     //eliminiamo anche l'eventuale backup file
-    if(backupFileName) {
-      console.log("eliminating auto backup file ", backupFileName)
-      await api.remove(backupFileName)
+    if (backupFileName) {
+      console.log("eliminating auto backup file ", backupFileName);
+      await api.remove(backupFileName);
     }
 
     buttons.success(button);
@@ -251,23 +303,32 @@ const preview = () => {
   isPreview.value = !isPreview.value;
 };
 
+const editorKeybindings = () => editor.value?.execCommand("showKeyboardShortcuts");
+
+const editorSettings = () => editor.value?.execCommand("showSettingsMenu");
+
+const editorSearch = () => editor.value?.execCommand("find");
+
+const editorReplace = () => editor.value?.execCommand("replace");
+
 const autoSave = () => {
-  console.log("autosaving");
+  //console.log("autosaving");
 
   if (editor.value?.session.getUndoManager().isClean()) {
-    console.log("no changes, no autsaving");
+    //console.log("no changes, no autsaving");
     return;
   }
 
   if (
     editor.value?.session.getUndoManager().getRevision() == lastSavedRevision
   ) {
-    console.log("all changes already saved, no autsaving");
+    //console.log("all changes already saved, no autsaving");
     return;
   }
 
   const lbl = document.querySelector(".autosave-label") as HTMLElement;
   if (lbl) {
+    lbl.style.visibility = "visible";
     lbl.style.opacity = "1.0";
     lbl.title = "saving";
   }
