@@ -132,10 +132,14 @@ const isMarkdownFile =
 
 const isMauroOutputFile = isMauroOutFile(fileStore.req!.name);
 const isMauroM2hvFile = isMauroM2HVOutFile(fileStore.req!.name);
+
+const _isBackupOrAutosave = isBackupOrAutosave(fileStore.req!.name);
+
 const readonly =
   !authStore.user?.perm.modify ||
   fileStore.req?.type === "textImmutable" ||
-  isMauroOutputFile;
+  isMauroOutputFile ||
+  _isBackupOrAutosave;
 
 const rawMauroFile = createRawMauroFile(fileStore.req!.url);
 
@@ -149,6 +153,10 @@ function createRawMauroFile(path: string) {
 
 function isMauroOutFile(filename: string) {
   return filename.match("^(m2lv|m2hv|m2ledmac|pdflatex)\\.OUT\\.log$") != null;
+}
+
+function isBackupOrAutosave(filename: string) {
+  return filename.match("\\.bak$") != null || filename.match("^#") != null;
 }
 
 function isMauroM2HVOutFile(filename: string) {
@@ -199,9 +207,7 @@ onMounted(() => {
   editor.value = ace.edit("editor", {
     value: fileContent,
     showPrintMargin: false,
-    readOnly:
-      fileStore.req?.type === "textImmutable" ||
-      isMauroOutFile(fileStore.req!.name),
+    readOnly: readonly,
 
     theme: "ace/theme/terminal",
     // theme: "ace/theme/chrome",
@@ -271,6 +277,15 @@ const save = async () => {
   buttons.loading("save");
 
   try {
+    /* creates a backup copy of the last saved file */
+    const copyData = {
+      from: route.path,
+      to: route.path + ".bak",
+      name: route.path,
+    };
+
+    await api.copy([copyData], true, false);
+
     await api.put(route.path, editor.value?.getValue());
     editor.value?.session.getUndoManager().markClean();
     lastSavedRevision = -1;
@@ -303,7 +318,8 @@ const preview = () => {
   isPreview.value = !isPreview.value;
 };
 
-const editorKeybindings = () => editor.value?.execCommand("showKeyboardShortcuts");
+const editorKeybindings = () =>
+  editor.value?.execCommand("showKeyboardShortcuts");
 
 const editorSettings = () => editor.value?.execCommand("showSettingsMenu");
 
